@@ -1,0 +1,747 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Koppenberg Replay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<meta name="description" content="Volg elke renner van de Koppenbergcross, niet alleen de leider. Een gratis replay op het echte parcours, voor de fans van élke crosser. Een project van Studio Bello.">
+<meta property="og:title" content="Koppenberg Replay">
+<meta property="og:description" content="Ook nummer 14 heeft supporters. Volg élke renner van de Koppenbergcross, renner per renner, op het echte parcours.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="social.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#18201B">
+<style>
+*,*::before,*::after{box-sizing:border-box}
+html{color-scheme:light}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+/* Layout: broadcast-style replay desk. Stage left, gap board right, chapters + elevation + transport below.
+   Clip mode turns the stage into a 9:16 frame for screen recording. Tabs: Replay / Jij vs de pro / Rondelogger / Data. */
+:root{
+  --bg:#EEF1EC; --panel:#F8FAF6; --ink:#18201B; --muted:#5B675F; --line:#CDD5CD;
+  --course:#6B7F5E; --climb:#3A3632; --tape:#D2352B; --tape-soft:#F6D9D5; --shadow:rgba(24,32,27,.10);
+  --ok:#2E7D4F; --warn:#A86A12; --scrim:rgba(248,250,246,.88);
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#131915; --panel:#1B231E; --ink:#E3E9E2; --muted:#93A197; --line:#2E3A32;
+  --course:#8FA67F; --climb:#D9CFC2; --tape:#F0584C; --tape-soft:#3A1F1C; --shadow:rgba(0,0,0,.35); --ok:#6CC08F; --warn:#E0A54A; --scrim:rgba(27,35,30,.88); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#131915; --panel:#1B231E; --ink:#E3E9E2; --muted:#93A197; --line:#2E3A32;
+  --course:#8FA67F; --climb:#D9CFC2; --tape:#F0584C; --tape-soft:#3A1F1C; --shadow:rgba(0,0,0,.35); --ok:#6CC08F; --warn:#E0A54A; --scrim:rgba(27,35,30,.88); color-scheme:dark }
+
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 28px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(30px,5vw,44px);line-height:1;margin:2px 0 0;letter-spacing:.01em;text-wrap:balance}
+h1 span{color:var(--tape)}
+.presented{display:flex;align-items:baseline;gap:8px;margin-top:6px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.bello{font-family:var(--display);font-weight:800;font-size:15px;letter-spacing:.32em;color:var(--ink)}
+.topbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+nav{display:flex;flex-wrap:wrap;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:3px}
+nav a{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:6px}
+nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+.lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.lang button{font-family:var(--mono);font-size:12px;background:var(--panel);color:var(--muted);border:0;padding:8px 10px}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--tape);outline-offset:2px}
+
+.races{display:flex;flex-wrap:wrap;gap:6px}
+.races button{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.04em;text-transform:uppercase;background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:5px 14px}
+.races button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.notice{display:flex;flex-direction:column;gap:3px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--warn);padding:9px 12px;border-radius:6px;font-size:13px}
+.notice[data-status="official"]{border-left-color:var(--ok)}
+.notice[data-status="estimated"]{border-left-color:var(--tape)}
+.notice .tag{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.notice[data-status="official"] .tag{color:var(--ok)}
+.notice[data-status="reconstructed"] .tag{color:var(--warn)}
+.notice[data-status="estimated"] .tag{color:var(--tape)}
+.notice .src{color:var(--muted);font-size:12px}
+.notice .src a{color:inherit}
+
+.desk{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
+@media (max-width:860px){.desk{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-height:340px;aspect-ratio:16/10;max-width:100%}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab;touch-action:none}
+.stage canvas:active{cursor:grabbing}
+.hud{position:absolute;left:12px;top:10px;display:flex;flex-direction:column;gap:2px;pointer-events:none}
+.clock{font-family:var(--display);font-weight:700;font-size:38px;line-height:1;font-variant-numeric:tabular-nums}
+.lap{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.hud-r{position:absolute;right:12px;top:12px;display:flex;gap:6px}
+.chip{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--tape);background:var(--bg);color:var(--tape);border-radius:99px;padding:3px 9px;cursor:pointer}
+.caption{position:absolute;left:12px;bottom:12px;max-width:calc(100% - 24px);background:var(--ink);color:var(--bg);font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.02em;padding:6px 12px;border-radius:6px;pointer-events:none;transition:opacity .3s}
+.caption small{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;font-weight:400}
+.hint{position:absolute;right:12px;bottom:10px;font-size:11px;color:var(--muted);pointer-events:none;text-align:right}
+
+.board{background:var(--panel);border:1px solid var(--line);border-radius:10px;display:flex;flex-direction:column;min-width:0}
+.board h2,.card h2{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.05em;text-transform:uppercase;margin:0;padding:10px 12px 6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.card h2{padding:10px 0 4px}
+.board h2 small{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:none;font-weight:400}
+.rows{display:flex;flex-direction:column;padding:0 6px 8px}
+.row{display:grid;grid-template-columns:22px 10px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px;border-radius:6px;cursor:pointer;border:0;background:none;color:inherit;font:inherit;text-align:left;width:100%}
+.row:hover{background:var(--bg)}
+.row[aria-pressed="true"],.row.battle{background:var(--tape-soft)}
+.pos{font-family:var(--display);font-weight:700;font-size:17px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%}
+.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.gap{font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.row:first-child .gap{color:var(--tape);font-weight:500}
+
+.strip{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.elev{position:relative;height:96px}
+.elev canvas{position:absolute;inset:0;width:100%;height:100%}
+.transport{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+button{font:inherit;cursor:pointer}
+.btn{font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.05em;text-transform:uppercase;background:var(--ink);color:var(--bg);border:0;border-radius:6px;padding:8px 14px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.tape{background:var(--tape);color:#fff}
+.scrub{flex:1 1 220px;min-width:0;accent-color:var(--tape)}
+select{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 8px;max-width:100%}
+.inl{display:flex;flex-direction:row;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.laps{display:flex;flex-wrap:wrap;gap:4px}
+.laps button{font-family:var(--mono);font-size:11px;background:var(--bg);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:3px 8px}
+.laps button:hover{color:var(--ink);border-color:var(--ink)}
+.chapters{display:flex;flex-direction:column;gap:2px}
+.chapters h3{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 4px;font-weight:500}
+.chap{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:baseline;text-align:left;background:none;border:0;border-radius:6px;padding:5px 6px;color:var(--ink)}
+.chap:hover,.chap[aria-current="true"]{background:var(--bg)}
+.chap .when{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:4px 14px 14px;min-width:0}
+.card p{max-width:68ch;margin:6px 0;color:var(--muted)}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+input[type=text],input[type=number],textarea{font:inherit;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%;box-sizing:border-box}
+input[type=file]{font:inherit;color:var(--muted);max-width:100%}
+textarea{font-family:var(--mono);font-size:12px;resize:vertical}
+.fields{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+.inline{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-end}
+.inline label{flex:1 1 120px}
+.bigclock{font-family:var(--display);font-weight:700;font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.taps{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.tap{display:flex;flex-direction:column;align-items:flex-start;gap:2px;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--ink);text-align:left}
+.tap:active,.tap.flash{background:var(--tape-soft);border-color:var(--tape)}
+.tap .n{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.tap .m{font-family:var(--mono);font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.status{font-family:var(--mono);font-size:12px;color:var(--muted);min-height:1.5em}
+ol.steps{margin:6px 0;padding-left:20px;color:var(--muted);max-width:68ch}
+ol.steps li{margin:3px 0}
+code{font-family:var(--mono);font-size:12px}
+
+/* duel */
+.duel{position:relative;height:260px;background:var(--bg);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-top:10px}
+.duel canvas{position:absolute;inset:0;width:100%;height:100%}
+.verdict{font-family:var(--display);font-weight:700;font-size:clamp(24px,4vw,34px);line-height:1.1;margin:10px 0 2px;text-wrap:balance}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:8px}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.stat b{display:block;font-family:var(--display);font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat span{font-size:11px;color:var(--muted)}
+
+/* clip mode (9:16) */
+.clipui{display:none}
+body.clip{padding-block:10px}
+body.clip header,body.clip #raceSel,body.clip #note,body.clip .board,body.clip .strip,body.clip .hud,body.clip .hud-r,body.clip .hint{display:none!important}
+body.clip .desk{display:block}
+body.clip .stage{aspect-ratio:9/16;width:min(100%,calc((100vh - 90px) * 9 / 16));min-height:0;margin:0 auto;border-radius:12px}
+body.clip .clipui{display:flex;position:absolute;inset:0;flex-direction:column;justify-content:space-between;pointer-events:none;padding:5% 5% 4%}
+body.clip .caption{left:5%;right:5%;bottom:auto;top:29%;max-width:none;font-size:clamp(18px,3.4vh,30px);text-align:left}
+.ctop{display:flex;flex-direction:column;gap:2px;background:var(--scrim);border-radius:10px;padding:10px 12px;align-self:stretch}
+.ctitle{font-family:var(--mono);font-size:clamp(10px,1.4vh,13px);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.cbrand{font-family:var(--display);font-weight:800;font-size:clamp(26px,4.6vh,44px);line-height:1;letter-spacing:.01em}
+.cbrand span{color:var(--tape)}
+.cclock{font-family:var(--display);font-weight:700;font-size:clamp(40px,8vh,80px);line-height:1;font-variant-numeric:tabular-nums;margin-top:6px}
+.clap{font-family:var(--mono);font-size:clamp(11px,1.6vh,15px);color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.cbottom{display:flex;flex-direction:column;gap:8px;background:var(--scrim);border-radius:10px;padding:8px 10px}
+.clist{display:flex;flex-direction:column;gap:3px}
+.crow{display:grid;grid-template-columns:1.4em 0.7em minmax(0,1fr) auto;gap:8px;align-items:center;font-size:clamp(14px,2.3vh,22px);font-weight:600}
+.crow .dot{width:.7em;height:.7em}
+.crow .g{font-family:var(--mono);font-weight:500;font-size:.8em;color:var(--muted)}
+.cfoot{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-family:var(--mono);font-size:clamp(9px,1.3vh,12px);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.cfoot .bello{font-size:clamp(12px,1.8vh,16px);letter-spacing:.22em;white-space:nowrap}
+.cfoot>span:last-child{white-space:nowrap}
+.cliptools{display:none}
+body.clip .cliptools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
+[hidden]{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1>Koppenberg <span>Replay</span></h1>
+      <div class="presented"><span data-i18n="presented"></span><span class="bello">STUDIO BELLO</span></div>
+    </div>
+    <div class="topbar">
+      <nav aria-label="Views">
+        <a href="#replay" id="tab-replay" data-i18n="tabReplay"></a>
+        <a href="#duel" id="tab-duel" data-i18n="tabDuel"></a>
+        <a href="#logger" id="tab-logger" data-i18n="tabLogger"></a>
+        <a href="#data" id="tab-data" data-i18n="tabData"></a>
+      </nav>
+      <div class="lang" role="group" aria-label="Language"><button type="button" id="lang-nl">NL</button><button type="button" id="lang-en">EN</button></div>
+    </div>
+  </header>
+
+  <!-- REPLAY -->
+  <section id="view-replay">
+    <div class="races" id="raceSel" style="margin-bottom:10px"></div>
+    <div class="notice" id="note" style="margin-bottom:14px">
+      <span class="tag" id="noteTag"></span><span id="noteText"></span><span class="src" id="noteSrc"></span>
+    </div>
+    <div class="desk">
+      <div class="stage" id="stage">
+        <canvas id="course" aria-label="Course with riders"></canvas>
+        <div class="hud"><div class="clock" id="clock">0:00</div><div class="lap" id="lapLabel"></div></div>
+        <div class="hud-r"><button class="chip" id="followChip" type="button" hidden></button></div>
+        <div class="caption" id="caption" hidden></div>
+        <div class="hint" data-i18n="hint"></div>
+        <div class="clipui" aria-hidden="true">
+          <div class="ctop">
+            <div class="ctitle" id="cTitle"></div>
+            <div class="cbrand">Koppenberg <span>Replay</span></div>
+            <div class="cclock" id="cClock">0:00</div>
+            <div class="clap" id="cLap"></div>
+          </div>
+          <div class="cbottom">
+            <div class="clist" id="cList"></div>
+            <div class="cfoot"><span id="cStatus"></span><span><span data-i18n="presented"></span> <span class="bello">STUDIO BELLO</span></span></div>
+          </div>
+        </div>
+      </div>
+      <aside class="board">
+        <h2><span data-i18n="order"></span> <small data-i18n="gapToLeader"></small></h2>
+        <div class="rows" id="rows" role="list"></div>
+      </aside>
+    </div>
+    <div class="cliptools">
+      <button class="btn tape" id="cPlay" type="button" data-i18n="play"></button>
+      <button class="btn ghost" id="cRestart" type="button" data-i18n="fromStart"></button>
+      <button class="btn ghost" id="cExit" type="button" data-i18n="exitClip"></button>
+    </div>
+    <div class="strip" style="margin-top:14px">
+      <div class="elev"><canvas id="elev" aria-label="Elevation profile"></canvas></div>
+      <div class="transport">
+        <button class="btn tape" id="play" type="button" data-i18n="play"></button>
+        <input class="scrub" id="scrub" type="range" min="0" max="1000" step="1" value="0" aria-label="Race time">
+        <label class="inl"><span data-i18n="camera"></span><select id="camSel"></select></label>
+        <label class="inl"><span data-i18n="speed"></span>
+          <select id="speed"><option value="15">15×</option><option value="30" selected>30×</option><option value="60">60×</option><option value="120">120×</option></select>
+        </label>
+        <button class="btn ghost" id="clipBtn" type="button" data-i18n="clipMode"></button>
+      </div>
+      <div class="laps" id="lapJumps"></div>
+      <div class="chapters"><h3 data-i18n="chapters"></h3><div id="chapList"></div></div>
+    </div>
+  </section>
+
+  <!-- DUEL -->
+  <section id="view-duel" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h2 data-i18n="duelTitle"></h2>
+        <p data-i18n="duelIntro"></p>
+        <div class="fields">
+          <label for="gpx"><span data-i18n="gpxLabel"></span><input type="file" id="gpx" accept=".gpx,application/gpx+xml"></label>
+          <div class="inline">
+            <label for="manualT"><span data-i18n="manualLabel"></span><input type="text" id="manualT" placeholder="3:45"></label>
+            <button class="btn ghost" id="manualGo" type="button" data-i18n="useTime"></button>
+          </div>
+          <label for="proSel"><span data-i18n="against"></span><select id="proSel"></select></label>
+          <div class="status" id="duelStatus"></div>
+        </div>
+        <p style="font-size:12px" data-i18n="privacy"></p>
+      </div>
+      <div class="card">
+        <h2 data-i18n="duelResult"></h2>
+        <div class="verdict" id="verdict"></div>
+        <div class="stats" id="duelStats"></div>
+        <div class="duel"><canvas id="duelCv" aria-label="Duel on the Koppenberg"></canvas></div>
+        <div class="inline" style="margin-top:8px"><button class="btn tape" id="duelPlay" type="button" data-i18n="playDuel"></button></div>
+        <p style="font-size:12px" data-i18n="duelNote"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGGER -->
+  <section id="view-logger" hidden>
+    <div class="card" style="margin-bottom:14px"><p data-i18n="logIntro"></p></div>
+    <div class="grid2">
+      <div class="card">
+        <h2 data-i18n="logSetup"></h2>
+        <div class="fields">
+          <div class="inline">
+            <label for="lgTitle"><span data-i18n="raceName"></span><input type="text" id="lgTitle"></label>
+            <label for="lgLaps" style="flex:0 1 110px"><span data-i18n="laps"></span><input type="number" id="lgLaps" min="1" max="15"></label>
+          </div>
+          <label for="lgRiders"><span data-i18n="ridersLabel"></span><textarea id="lgRiders" rows="9"></textarea></label>
+          <div class="inline"><button class="btn ghost" id="lgApply" type="button" data-i18n="updateButtons"></button></div>
+        </div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="logClock"></h2>
+        <p data-i18n="logClockHelp"></p>
+        <div class="bigclock" id="lgClock">0:00</div>
+        <div class="inline" style="margin-top:8px">
+          <button class="btn tape" id="lgStart" type="button"></button>
+          <label for="lgSyncVal" style="flex:0 1 110px"><span data-i18n="raceTime"></span><input type="text" id="lgSyncVal" placeholder="12:34"></label>
+          <button class="btn ghost" id="lgSync" type="button">Sync</button>
+          <button class="btn ghost" id="lgUndo" type="button" data-i18n="undo"></button>
+        </div>
+        <div class="status" id="lgStatus"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px"><h2 data-i18n="logTap"></h2><div class="taps" id="lgTaps"></div></div>
+    <div class="card" style="margin-top:14px">
+      <h2 data-i18n="logSend"></h2>
+      <div class="inline" style="margin-top:6px">
+        <button class="btn tape" id="lgLoad" type="button" data-i18n="loadReplay"></button>
+        <button class="btn ghost" id="lgCopy" type="button" data-i18n="copyData"></button>
+        <button class="btn ghost" id="lgClear" type="button" data-i18n="clearTaps"></button>
+      </div>
+      <div class="status" id="lgOutStatus"></div>
+      <textarea id="lgOut" rows="4" readonly aria-label="Data" style="margin-top:6px"></textarea>
+    </div>
+  </section>
+
+  <!-- DATA -->
+  <section id="view-data" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h2 data-i18n="dataTitle"></h2>
+        <p data-i18n="dataHelp"></p>
+        <textarea id="dataIn" rows="14" aria-label="Race data"></textarea>
+        <div class="inline" style="margin-top:8px">
+          <button class="btn tape" id="dataLoad" type="button" data-i18n="loadReplay"></button>
+          <button class="btn ghost" id="dataCopy" type="button" data-i18n="copy"></button>
+          <button class="btn ghost" id="dataReset" type="button" data-i18n="reloadFile"></button>
+        </div>
+        <div class="status" id="dataStatus"></div>
+      </div>
+      <div class="card">
+        <h2 data-i18n="howTitle"></h2>
+        <ol class="steps" id="howList"></ol>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=s=>{s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return (h?h+":"+String(m).padStart(2,"0"):m)+":"+String(x).padStart(2,"0")};
+const parseT=v=>{if(typeof v==="number")return v;v=String(v||"").trim().replace(/^\+/,"").replace(/[’'′]/g,":").replace(/["″]/g,"");if(!v)return NaN;const p=v.split(":").filter(s=>s!=="").map(Number);if(!p.length||p.some(isNaN))return NaN;return p.reduce((a,b)=>a*60+b,0)};
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const COLORS=["#D2352B","#2F6FB5","#C9871A","#2E8B6A","#8A4FB0","#B5487A","#4C8C2B","#1F8FA6","#A35A2A","#5E6AD2","#7A7F29","#C2410C","#0E7490","#9D174D","#3F6212"];
+const PARTICLES=new Set(["van","de","der","den","van der","ter","ten","le","la","da","di","du","von"]);
+const last=n=>{const w=String(n).trim().split(/\s+/);for(let i=1;i<w.length-1;i++){if(PARTICLES.has(w[i].toLowerCase())){const s=w.slice(i).join(" ");return s[0].toUpperCase()+s.slice(1)}}return w[w.length-1]};
+
+/* ================= TEXT ================= */
+const STR={
+nl:{eyebrow:"Veldrit-replay · Oudenaarde, Bult van Melden",presented:"gepresenteerd door",tabReplay:"Replay",tabDuel:"Jij vs de pro",tabLogger:"Rondelogger",tabData:"Data",
+ hint:"Sleep om te draaien · donker = kasseien van de Koppenberg · parcours naar de kaart van de organisator, hoogtes benaderd",
+ order:"Stand",gapToLeader:"achterstand op de leider",play:"Afspelen",pause:"Pauze",replayAgain:"Opnieuw",fromStart:"Vanaf start",exitClip:"Stop clipmodus",camera:"Camera",speed:"Snelheid",clipMode:"Clipmodus 9:16",chapters:"Sleutelmomenten · afgeleid uit de data",
+ camOverview:"Overzicht",camLeader:"Volg de leider",camBattle:"Strijd om plek {n}",following:"Volgt {n}",battleChip:"Strijd om plek {n}",
+ lap:"Ronde {a} van {b}",startStraight:"Start op de Koppenberg · ronde 1 van {b}",finished:"Finish",lapBtn:"Ronde {n}",finishBtn:"Finish",lapShort:"Ronde {n}",out:"uit",
+ stOfficial:"Officiële rondetijden",stRecon:"Gereconstrueerd",stEst:"Geschat",demo:"Demo · koers van vorig jaar · ",
+ txOfficial:"De rondetijden komen uit de tijdsregistratie.",txRecon:"De uitslag is echt, plus {n} tussenstand{s} uit de liveverslaggeving. Alles daartussen is gelijkmatig ingevuld.",txEst:"Gebouwd op de uitslag alleen. De tussenstanden zijn niet echt: gebruik dit niet om te vertellen hoe de koers verliep.",
+ sources:"Bronnen: ",check:" · Nakijken: ",
+ evStart:"Start bergop de Koppenberg",evDecisive:"{a} rijdt weg, {g} voor {b}",evLead:"{a} neemt de leiding",evShrink:"{a} knabbelt {g} af op {b}",evMover:"{a} schuift {n} plaatsen op",evClose:"Nek-aan-nek: {a} en {b} op {g}",evFinish:"{a} wint op de Koppenberg",
+ duelTitle:"Rijd tegen de pro",duelIntro:"Laad een rit op waarin je de Koppenberg beklimt en zie hoe je het doet tegen de koplopers in de cross. Of typ gewoon je tijd.",gpxLabel:"Je rit als GPX-bestand (te exporteren uit Strava of Garmin Connect)",manualLabel:"Of je tijd op de Koppenberg (m:ss)",useTime:"Gebruik deze tijd",against:"Tegen",privacy:"Je bestand blijft op je eigen toestel. Niets wordt verstuurd of bewaard.",
+ duelResult:"Het duel",playDuel:"Speel het duel",duelNote:"De tijd van de pro is geschat uit het rondemodel voor de volledige klim bij de start, zonder voorafgaande koers. De beklimming in de cross loopt niet over exact dezelfde lijn als de weg.",
+ vSlower:"{who} komt {g} na jou boven. Knap!",vFaster:"{who} is {g} sneller boven dan jij",vDraw:"Gelijk boven met {who}!",
+ sYou:"Jouw tijd",sPro:"Tijd van {who}",sGap:"Verschil",sClimb:"Gevonden klim",you:"Jij",
+ noClimb:"Geen klim van de Koppenberg gevonden in dit bestand (zoek ±450–800 m met ±45–80 m stijging).",noTime:"Dit bestand heeft geen tijden per punt.",badGpx:"Kon dit bestand niet lezen als GPX.",foundClimb:"Klim gevonden: {d} m, {h} m stijging, gemiddeld {p}%, in {t}.",badTime:"Typ je tijd als m:ss, bijvoorbeeld 3:45.",
+ logIntro:"Optioneel. Kan iemand de koers live of herbekijken? Tik dan bij elke doorkomst op de renner. Dat geeft exacte rondetijden, beter dan elke reconstructie.",
+ logSetup:"1 · Instellen",raceName:"Naam van de koers",laps:"Rondes",ridersLabel:"Renners om te volgen, één per lijn",updateButtons:"Knoppen bijwerken",logClock:"2 · Koersklok",logClockHelp:"Start de klok bij het startschot, of typ de koerstijd op het scherm en druk op Sync.",raceTime:"Koerstijd",undo:"Laatste tik ongedaan maken",
+ startClock:"Start de klok",restartClock:"Herstart op 0:00",logTap:"3 · Tik bij de doorkomst",logSend:"4 · Naar de replay",loadReplay:"Laad in de replay",copyData:"Kopieer data",clearTaps:"Wis alle tikken",clearAgain:"Tik nogmaals om te wissen",copy:"Kopieer",reloadFile:"Laad racebestand opnieuw",
+ noLaps:"Nog geen rondes",lapAt:"Ronde {n} · {t}",clockFirst:"Start of sync eerst de klok.",hasAll:"{r} heeft al {n} rondes.",tapped:"{r} · ronde {n} om {t}",updated:"Knoppen bijgewerkt.",clockRun:"Klok loopt vanaf 0:00.",typeTime:"Typ de koerstijd als mm:ss, bijvoorbeeld 12:34.",synced:"Klok gesynchroniseerd op {t}.",nothingUndo:"Niets om ongedaan te maken.",removed:"{r} om {t} verwijderd.",cleared:"Alle tikken gewist.",tapFirst:"Tik eerst minstens één ronde.",copied:"Gekopieerd.",selected:"Geselecteerd. Druk op Ctrl+C of ⌘C om te kopiëren.",
+ dataTitle:"Racedata",dataHelp:"Dit is de data achter de koers op het scherm. Plak hier nieuwe data om die te laden: een racebestand (JSON), uitvoer van de rondelogger, of één renner per lijn met cumulatieve rondetijden (Thibau Nys, 9:58, 19:36).",
+ loaded:"Geladen.",cantRead:"Kon dit niet lezen: ",fileReloaded:"Racebestand opnieuw geladen.",howTitle:"Hoe de replay gebouwd wordt",
+ how:["<b>Officieel</b>: rondetijden uit tijdsregistratie of de rondelogger worden gebruikt zoals ze zijn.","<b>Gereconstrueerd</b>: de uitslag is echt, plus elke tussenstand uit liveverslaggeving (\"Gery op 14 seconden na ronde 2\"). Daartussen wordt gelijkmatig ingevuld.","<b>Geschat</b>: alleen de uitslag is bekend, dus elke achterstand groeit gelijkmatig.","Binnen een ronde volgt de positie een tempoprofiel uit het parcours zelf: trager op de kasseien, bergop en in scherpe bochten, sneller bergaf. De start gaat de volledige Koppenberg op vanaf de voet in Melden; elke ronde eindigt op de bovenste helft, met de finish op de top.","Sleutelmomenten worden uit dezelfde data afgeleid. Bij een gereconstrueerde koers zijn het dus benaderingen.","De achterstanden op het bord worden gemeten op de plek van elke renner op het parcours."]},
+en:{eyebrow:"Cyclocross replay · Oudenaarde, Bult van Melden",presented:"presented by",tabReplay:"Replay",tabDuel:"You vs the pro",tabLogger:"Lap logger",tabData:"Data",
+ hint:"Drag to rotate · dark = Koppenberg cobbles · course from the organiser's map, heights approximate",
+ order:"Race order",gapToLeader:"gap to leader",play:"Play",pause:"Pause",replayAgain:"Replay",fromStart:"From start",exitClip:"Exit clip mode",camera:"Camera",speed:"Speed",clipMode:"Clip mode 9:16",chapters:"Key moments · derived from the data",
+ camOverview:"Overview",camLeader:"Follow the leader",camBattle:"Battle for {n}th",following:"Following {n}",battleChip:"Battle for {n}th",
+ lap:"Lap {a} of {b}",startStraight:"Start up the Koppenberg · lap 1 of {b}",finished:"Finished",lapBtn:"Lap {n}",finishBtn:"Finish",lapShort:"Lap {n}",out:"out",
+ stOfficial:"Official lap times",stRecon:"Reconstructed",stEst:"Estimated",demo:"Demo · last year's race · ",
+ txOfficial:"Lap times come from timing data.",txRecon:"Final result is real, plus {n} mid-race gap{s} from live coverage. Everything in between is filled in evenly.",txEst:"Built from the final result only. Mid-race gaps are not real, so don't use this for a story about how the race unfolded.",
+ sources:"Sources: ",check:" · Check: ",
+ evStart:"Start up the Koppenberg",evDecisive:"{a} rides clear, {g} ahead of {b}",evLead:"{a} takes the lead",evShrink:"{a} claws back {g} on {b}",evMover:"{a} moves up {n} places",evClose:"Neck and neck: {a} and {b} within {g}",evFinish:"{a} wins on the Koppenberg",
+ duelTitle:"Ride against the pro",duelIntro:"Upload a ride where you climbed the Koppenberg and see how you compare with the race leaders. Or just type your time.",gpxLabel:"Your ride as a GPX file (export from Strava or Garmin Connect)",manualLabel:"Or your Koppenberg time (m:ss)",useTime:"Use this time",against:"Against",privacy:"Your file stays on your device. Nothing is sent or stored.",
+ duelResult:"The duel",playDuel:"Play the duel",duelNote:"The pro's time is estimated from the lap model for the full climb at the start, with no racing before it. The cross climbs a line close to, not exactly on, the road.",
+ vSlower:"{who} tops out {g} after you. Chapeau!",vFaster:"{who} is {g} faster to the top than you",vDraw:"Level with {who} at the top!",
+ sYou:"Your time",sPro:"{who}'s time",sGap:"Difference",sClimb:"Climb found",you:"You",
+ noClimb:"No Koppenberg climb found in this file (looking for about 450–800 m rising 45–80 m).",noTime:"This file has no time on its points.",badGpx:"Couldn't read this file as GPX.",foundClimb:"Climb found: {d} m, {h} m gain, {p}% average, in {t}.",badTime:"Type your time as m:ss, for example 3:45.",
+ logIntro:"Optional. If anyone can watch a race live or on replay, tapping riders at each crossing gives exact lap times, which beat any reconstruction.",
+ logSetup:"1 · Set up",raceName:"Race name",laps:"Laps",ridersLabel:"Riders to track, one per line",updateButtons:"Update rider buttons",logClock:"2 · Race clock",logClockHelp:"Start the clock with the start gun, or type the race time shown on screen and press Sync.",raceTime:"Race time",undo:"Undo last tap",
+ startClock:"Start clock",restartClock:"Restart at 0:00",logTap:"3 · Tap at the line",logSend:"4 · Send to replay",loadReplay:"Load into replay",copyData:"Copy data",clearTaps:"Clear all taps",clearAgain:"Tap again to clear",copy:"Copy",reloadFile:"Reload race file",
+ noLaps:"No laps yet",lapAt:"Lap {n} · {t}",clockFirst:"Start or sync the clock first.",hasAll:"{r} already has {n} laps.",tapped:"{r} · lap {n} at {t}",updated:"Rider buttons updated.",clockRun:"Clock running from 0:00.",typeTime:"Type the race time as mm:ss, for example 12:34.",synced:"Clock synced to {t}.",nothingUndo:"Nothing to undo.",removed:"Removed {r} at {t}.",cleared:"All taps cleared.",tapFirst:"Tap at least one lap first.",copied:"Copied.",selected:"Selected. Press Ctrl+C or ⌘C to copy.",
+ dataTitle:"Race data",dataHelp:"This is the data behind the race on screen. Paste new data here to load it: a race file (JSON), lap-logger output, or one rider per line with cumulative lap times (Thibau Nys, 9:58, 19:36).",
+ loaded:"Loaded.",cantRead:"Couldn't read that: ",fileReloaded:"Race file reloaded.",howTitle:"How the replay is built",
+ how:["<b>Official</b>: lap times from timing data or the lap logger are used as they are.","<b>Reconstructed</b>: the final result is real, plus every mid-race gap reported in live coverage (\"Gery at 14 seconds after lap 2\"). Gaps in between are filled in evenly.","<b>Estimated</b>: only the final result is known, so each gap grows evenly over the race.","Inside a lap, position follows a pace profile from the course itself: slower on cobbles, climbs and tight turns, faster on descents. The start climbs the whole Koppenberg from the foot in Melden; every lap ends on its upper half with the finish on top.","Key moments are derived from the same data, so on a reconstructed race they are approximations.","Gaps on the board are measured at each rider's own spot on the course."]}
+};
+let lang=store.get("kr-lang")||"nl";
+const T=(k,v={})=>{let s=(STR[lang][k]??STR.en[k]??k);return typeof s==="string"?s.replace(/\{(\w+)\}/g,(_,x)=>v[x]??""):s};
+const gs=s=>s<60?Math.round(s)+(lang==="nl"?" s":"s"):fmt(s);
+function applyLang(){document.documentElement.lang=lang;document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=T(el.dataset.i18n));
+  $("howList").innerHTML=T("how").map(x=>"<li>"+x+"</li>").join("");
+  $("lang-nl").setAttribute("aria-pressed",String(lang==="nl"));$("lang-en").setAttribute("aria-pressed",String(lang==="en"));
+  if(race){selectRace(races.indexOf(race),true)}lgRender();renderDuel();updatePlayLabels()}
+$("lang-nl").onclick=()=>{lang="nl";store.set("kr-lang",lang);applyLang()};
+$("lang-en").onclick=()=>{lang="en";store.set("kr-lang",lang);applyLang()};
+
+/* ================= COURSE ================= */
+const LOOP_PX=[[1278,400],[1298,440],[1305,520],[1322,610],[1338,645],[1330,560],[1326,490],[1352,488],[1358,560],[1385,590],[1410,690],[1378,688],[1396,718],[1414,742],[1394,752],[1372,722],[1365,762],[1330,800],[1282,862],[1250,848],[1290,772],[1312,738],[1350,680],[1262,610],[1176,546],[1188,590],[1170,630],[1152,596],[1136,630],[1120,596],[1104,630],[1094,600],[1110,525],[1072,398],[1090,394],[1118,470],[1122,402],[1148,378],[1172,394],[1150,416],[1128,430],[1152,448],[1176,442],[1120,522],[1060,575],[975,665],[922,712],[860,650],[866,632],[914,690],[946,655],[900,605],[878,588],[868,555],[866,520],[890,504],[932,510],[940,528],[906,552],[876,548],[838,560],[790,562],[736,566],[720,522],[776,536],[800,496],[850,465],[975,416],[1005,372],[1020,326],[1004,318],[984,332],[956,326],[1000,290],[1140,345]];
+const JOIN_IDX=74,LANE_PX=[[655,133],[770,186],[885,238],[1000,290]],LAP_M=3000;
+// Steengat = the cobbled Koppenberg road: foot at the start flag (Melden side), top at the finish.
+// Profile from public figures: ~64 m rise, ~120 m asphalt then cobbles, steepest (~20%+) on the upper middle, easing at the top.
+const TOP=[1290,405],FOOT=[655,133],ROAD_LEN_PX=Math.hypot(TOP[0]-FOOT[0],TOP[1]-FOOT[1]),UX=(TOP[0]-FOOT[0])/ROAD_LEN_PX,UY=(TOP[1]-FOOT[1])/ROAD_LEN_PX;
+const Z_FOOT=13,Z_TOP=77;
+const roadF=s=>{s=Math.min(Math.max(s,0),1);const seg=[[0,0],[0.549,0.572],[0.62,0.643],[0.82,0.943],[1,1]];for(let i=1;i<seg.length;i++)if(s<=seg[i][0]){const [a,fa]=seg[i-1],[b,fb]=seg[i];return fa+(fb-fa)*(s-a)/(b-a)}return 1};
+const roadPos=(x,y)=>{const ax=x-FOOT[0],ay=y-FOOT[1];return {s:(ax*UX+ay*UY)/ROAD_LEN_PX,off:Math.abs(ax*UY-ay*UX)}};
+function elevAt(x,y){const r=roadPos(x,y);if(r.off<14&&r.s>-0.02&&r.s<1.03)return Z_FOOT+(Z_TOP-Z_FOOT)*roadF(r.s);return Math.max(12,78-0.0915*Math.hypot(x-TOP[0],y-TOP[1]))}
+const onCobbles=(x,y)=>{const r=roadPos(x,y);return r.off<14&&r.s>0.19&&r.s<0.985};
+
+function smoothClosed(pts,seg){const n=pts.length,out=[];for(let i=0;i<n;i++){const p0=pts[(i-1+n)%n],p1=pts[i],p2=pts[(i+1)%n],p3=pts[(i+2)%n];
+  for(let s=0;s<seg;s++){const t=s/seg,t2=t*t,t3=t2*t,f=(a,b,c,d)=>0.5*(2*b+(-a+c)*t+(2*a-5*b+4*c-d)*t2+(-a+3*b-3*c+d)*t3);out.push([f(p0[0],p1[0],p2[0],p3[0]),f(p0[1],p1[1],p2[1],p3[1]),i])}}
+  out.push([...out[0].slice(0,2),n-1]);return out}
+const pxLen=a=>{let L=0;for(let i=1;i<a.length;i++)L+=Math.hypot(a[i][0]-a[i-1][0],a[i][1]-a[i-1][1]);return L};
+const loopDense=smoothClosed(LOOP_PX,10);
+{let c=0;const tot=pxLen(loopDense);loopDense.forEach((p,i)=>{if(i)c+=Math.hypot(p[0]-loopDense[i-1][0],p[1]-loopDense[i-1][1]);p[3]=c/tot})}
+const M_PER_PX=LAP_M/pxLen(loopDense);
+function makeTrack(dense,N,laneFlags){
+  const L=[0];for(let i=1;i<dense.length;i++)L.push(L[i-1]+Math.hypot(dense[i][0]-dense[i-1][0],dense[i][1]-dense[i-1][1]));
+  const tot=L[L.length-1],P=[];let j=0;
+  for(let k=0;k<=N;k++){const d=k/N*tot;while(j<L.length-2&&L[j+1]<d)j++;const a=dense[j],b=dense[j+1],u=(d-L[j])/((L[j+1]-L[j])||1);
+    const px=a[0]+(b[0]-a[0])*u,py=a[1]+(b[1]-a[1])*u;const lf=(a[3]==null||b[3]==null)?null:(Math.abs(b[3]-a[3])>0.5?a[3]:a[3]+(b[3]-a[3])*u);
+    P.push({x:px*M_PER_PX,y:py*M_PER_PX,z:elevAt(px,py),cob:onCobbles(px,py),lane:laneFlags?laneFlags(d/tot):false,loopD:lf})}
+  const ds=tot*M_PER_PX/N,pace=[];
+  for(let k=0;k<N;k++){const g=(P[k+1].z-P[k].z)/ds;const a0=P[Math.max(0,k-3)],a1=P[k],a2=P[Math.min(N,k+3)];
+    const h1=Math.atan2(a1.y-a0.y,a1.x-a0.x),h2=Math.atan2(a2.y-a1.y,a2.x-a1.x);let dh=Math.abs(h2-h1);if(dh>Math.PI)dh=2*Math.PI-dh;
+    pace.push(Math.max(0.7,1+9*Math.max(0,g)-2.5*Math.max(0,-g))+Math.min(1.1,dh/(ds*6+1e-6)*5)+(P[k].cob?0.3:0));P[k].grad=g}
+  P[N].grad=P[N-1].grad;const TF=[0];for(let k=0;k<N;k++)TF.push(TF[k]+pace[k]);const Tt=TF[N];
+  return {P,N,TF:TF.map(v=>v/Tt),paceTotal:Tt*ds}}
+const LOOP=makeTrack(loopDense,900);
+const joinDenseIdx=loopDense.findIndex(p=>p[2]===JOIN_IDX);
+const lap1Dense=LANE_PX.map(p=>[p[0],p[1],-1,null]).concat(loopDense.slice(joinDenseIdx),loopDense.slice(1));
+const laneLenPx=pxLen(LANE_PX),lap1LenPx=pxLen(lap1Dense);
+const LAP1=makeTrack(lap1Dense,1100,f=>f*lap1LenPx<laneLenPx);
+const LAP1_FACTOR=LAP1.paceTotal/LOOP.paceTotal;
+// share of lap-1 time spent on the full start climb (start flag to the first finish-line crossing)
+const CLIMB_SHARE=(()=>{for(let k=1;k<=LAP1.N;k++){const a=LAP1.P[k-1].loopD,b=LAP1.P[k].loopD;if(a!=null&&b!=null&&b<a-0.5)return LAP1.TF[k]}return 0.12})();
+
+const timeFrac=(tr,d)=>{const x=Math.min(Math.max(d,0),1)*tr.N,i=Math.min(tr.N-1,Math.floor(x));return tr.TF[i]+(tr.TF[i+1]-tr.TF[i])*(x-i)};
+const distFrac=(tr,f)=>{f=Math.min(Math.max(f,0),1);let lo=0,hi=tr.N;while(hi-lo>1){const m=(lo+hi)>>1;if(tr.TF[m]<=f)lo=m;else hi=m}return (lo+(f-tr.TF[lo])/((tr.TF[hi]-tr.TF[lo])||1))/tr.N};
+const trackFor=lap=>lap===0?LAP1:LOOP;
+function pointOn(tr,d){d=Math.min(Math.max(d,0),1);const x=d*tr.N,i=Math.min(tr.N-1,Math.floor(x)),u=x-i,a=tr.P[i],b=tr.P[i+1];
+  return {x:a.x+(b.x-a.x)*u,y:a.y+(b.y-a.y)*u,z:a.z+(b.z-a.z)*u,tx:b.x-a.x,ty:b.y-a.y,loopD:tr===LOOP?d:(a.loopD==null?null:a.loopD+(Math.abs(b.loopD-a.loopD)>0.5?0:(b.loopD-a.loopD)*u))}}
+
+/* ================= RACE DATA ================= */
+const DEMO_FILE={updated:"2026-10-29",races:[
+ {id:"women-2025",title:"Koppenbergcross 2025 · Elite vrouwen",laps:5,isDemo:true,
+  sources:[{label:"Sporza liveverslag",url:"https://sporza.be/nl/matches/veldrijden/x-o-trofee-vrouwen/2025/koppenbergcross-oudenaarde-franse-tiener-gery-legt-winnende-lucinda-brand-het-vuur-aan-de-schenen-op-koppenberg-van-empel-geeft-snel-op~1758531300433/"},{label:"Uitslag (BikeRaceInfo)",url:"https://bikeraceinfo.com/cross/koppenberg-oudenaarde-cross/2025-koppenberg-cyclocross.html"}],
+  result:[{name:"Lucinda Brand",time:"46:01"},{name:"Célia Gery",gap:"0:19"},{name:"Sara Casasola",gap:"1:23"},{name:"Hélène Clauzel",gap:"1:45"},{name:"Inge van der Heijden",gap:"2:18"},{name:"Amandine Muller",gap:"2:23"},{name:"Kiona Crabbé",gap:"3:09"},{name:"Amandine Fouquenet",gap:"3:31"},{name:"Manon Bakker",gap:"3:51"},{name:"Denise Betsema",gap:"4:16"},{name:"Marion Norbert Riberolle",gap:"5:06"},{name:"Jinse Peeters",gap:"5:43"}],
+  anchors:[{afterLap:1,name:"Célia Gery",gap:3,note:"Sporza 13:58"},{afterLap:1,name:"Hélène Clauzel",gap:9,note:"Sporza 13:58"},{afterLap:1,name:"Sara Casasola",gap:9,note:"Sporza 13:58"},{afterLap:1,name:"Amandine Fouquenet",gap:17,note:"Sporza 13:58"},
+   {afterLap:2,name:"Célia Gery",gap:14,note:"Sporza 14:09"},{afterLap:2,name:"Sara Casasola",gap:27,note:"Sporza 14:09"},{afterLap:2,name:"Hélène Clauzel",gap:27,note:"Sporza 14:09"},{afterLap:2,name:"Amandine Fouquenet",gap:69,note:"Sporza 14:09"},{afterLap:2,name:"Inge van der Heijden",gap:69,note:"Sporza 14:09"},{afterLap:2,name:"Kiona Crabbé",gap:85,note:"Sporza 14:09"},
+   {afterLap:4,name:"Célia Gery",gap:19,note:"Sporza 14:21, start laatste ronde"},{afterLap:4,name:"Sara Casasola",gap:44,note:"Sporza 14:21"},{afterLap:4,name:"Hélène Clauzel",gap:58,note:"Sporza 14:21"}]},
+ {id:"men-2025",title:"Koppenbergcross 2025 · Elite mannen",laps:6,isDemo:true,
+  sources:[{label:"Sporza liveverslag",url:"https://sporza.be/nl/matches/veldrijden/x-o-trofee/2025/koppenbergcross-oudenaarde-met-een-knal-zijn-seizoen-geopend-thibau-nys-temt-de-koppenberg-in-zijn-eerste-cross~1758531720274/"},{label:"Uitslag (BikeRaceInfo)",url:"https://bikeraceinfo.com/cross/koppenberg-oudenaarde-cross/2025-koppenberg-cyclocross.html"}],
+  result:[{name:"Thibau Nys",time:"58:39"},{name:"Cameron Mason",gap:"0:21"},{name:"Pim Ronhaar",gap:"1:44"},{name:"Victor Van de Putte",gap:"1:54"},{name:"Toon Aerts",gap:"2:03"},{name:"Lars van der Haar",gap:"2:07"},{name:"Gerben Kuypers",gap:"2:21"},{name:"Joris Nieuwenhuis",gap:"2:38"},{name:"Niels Vandeputte",gap:"2:44"},{name:"Witse Meeussen",gap:"2:48"}],
+  anchors:[{afterLap:3,name:"Cameron Mason",gap:18,note:"Sporza 15:30, halfweg"},{afterLap:4,name:"Cameron Mason",gap:25,note:"Sporza 15:40"},{afterLap:4,name:"Pim Ronhaar",gap:54,note:"Sporza 15:40"}]}
+]};
+
+function buildRace(def,i){
+  const laps=Math.max(1,Math.round(Number(def.laps)||0)||Math.max(...(def.riders||[]).map(r=>(r.passings||[]).length),1));
+  let riders=[],status="official",warnings=[],anchorCount=0;
+  if(Array.isArray(def.riders)&&def.riders.some(r=>r.passings&&r.passings.length)){
+    riders=def.riders.map(r=>({name:String(r.name).trim(),pass:(r.passings||[]).map(parseT).filter(v=>isFinite(v)&&v>0).sort((a,b)=>a-b).slice(0,laps)}));status=def.status||"official";
+  }else if(Array.isArray(def.result)&&def.result.length){
+    const res=def.result.map(r=>({name:String(r.name).trim(),time:parseT(r.time),gap:parseT(r.gap),lapsDown:Number(r.lapsDown)||0}));
+    const Tw=res[0].time;if(!isFinite(Tw))throw new Error("winner time");
+    const base=Tw/(LAP1_FACTOR+laps-1),W=[0];for(let k=1;k<=laps;k++)W.push(base*(LAP1_FACTOR+k-1));
+    const anchors=(def.anchors||[]).map(a=>({lap:Number(a.afterLap),name:String(a.name).trim().toLowerCase(),gap:parseT(a.gap)})).filter(a=>a.lap>=1&&a.lap<laps&&isFinite(a.gap));
+    anchorCount=anchors.length;
+    res.forEach((r,k)=>{if(r.lapsDown)return;const G=k===0?0:(isFinite(r.gap)?r.gap:(isFinite(r.time)?r.time-Tw:NaN));if(!isFinite(G)){warnings.push(r.name);return}
+      const pts=[[0,0]].concat(anchors.filter(a=>a.name===r.name.toLowerCase()).map(a=>[a.lap,a.gap]).sort((a,b)=>a[0]-b[0]),[[laps,G]]);
+      const g=l=>{for(let q=1;q<pts.length;q++)if(l<=pts[q][0]){const [l0,g0]=pts[q-1],[l1,g1]=pts[q];return g0+(g1-g0)*(l-l0)/((l1-l0)||1)}return G};
+      const pass=[];for(let l=1;l<=laps;l++)pass.push(W[l]+g(l));riders.push({name:r.name,pass})});
+    status=anchorCount?"reconstructed":"estimated";
+  }else throw new Error("no riders");
+  riders=riders.filter(r=>r.pass.length).map((r,k)=>{const lapT=r.pass.map((t,q)=>t-(q?r.pass[q-1]:0));if(lapT.some(v=>v<=0))warnings.push(r.name);
+    return {...r,lapT,idx:k,color:COLORS[k%COLORS.length],finished:r.pass.length===laps,end:r.pass[r.pass.length-1]}});
+  if(!riders.length)throw new Error("no riders");
+  const R={id:def.id||("race"+i),title:def.title||"Race",laps,status,isDemo:!!def.isDemo,sources:def.sources||[],anchorCount,riders,duration:Math.max(...riders.map(r=>r.end)),warnings,def};
+  R.events=deriveEvents(R);return R}
+function progressAt(r,t){if(t>=r.end)return r.pass.length;let i=0;while(i<r.pass.length&&r.pass[i]<=t)i++;return i+distFrac(trackFor(i),(t-(i?r.pass[i-1]:0))/r.lapT[i])}
+function timeAtProgress(r,p){const i=Math.floor(p);if(i>=r.pass.length)return Infinity;return (i?r.pass[i-1]:0)+r.lapT[i]*timeFrac(trackFor(i),p-i)}
+const positionOf=p=>{const lap=Math.floor(p);return pointOn(trackFor(lap),p-lap)};
+
+/* ================= KEY MOMENTS ================= */
+function deriveEvents(R){
+  const ev=[],L=R.laps,rs=R.riders.filter(r=>r.pass.length===L);if(rs.length<2)return ev;
+  const order=k=>rs.slice().sort((a,b)=>a.pass[k]-b.pass[k]); // standings at end of lap k+1
+  ev.push({t:0,lap:0,key:"evStart",v:{}});
+  // decisive: first lap end from which the winner leads every remaining lap by >= 8 s
+  const winner=order(L-1)[0];
+  for(let k=0;k<L;k++){let ok=true;for(let q=k;q<L;q++){const o=order(q);if(o[0]!==winner||o[1].pass[q]-winner.pass[q]<8){ok=false;break}}
+    if(ok&&k<L-1){const o=order(k);ev.push({t:winner.pass[k]-25,lap:k+1,key:"evDecisive",v:{a:winner.name,b:o[1].name,g:o[1].pass[k]-winner.pass[k]},focus:"leader"});break}}
+  // lead changes
+  for(let k=1;k<L;k++){const a=order(k-1)[0],b=order(k)[0];if(a!==b)ev.push({t:b.pass[k]-25,lap:k+1,key:"evLead",v:{a:b.name},focus:"leader"})}
+  // biggest clawback on the leader by the runner-up
+  let best=null;for(let k=1;k<L;k++){const o0=order(k-1),o=order(k);const r=o[1];const g0=r.pass[k-1]-o0[0].pass[k-1],g1=r.pass[k]-o[0].pass[k];if(o[0]===o0[0]&&g0-g1>=4&&(!best||g0-g1>best.d))best={d:g0-g1,k,r,lead:o[0]}}
+  if(best)ev.push({t:best.r.pass[best.k]-30,lap:best.k+1,key:"evShrink",v:{a:best.r.name,b:best.lead.name,g:best.d},focus:"battle:2"});
+  // biggest mover from lap 1 to finish
+  const p1=order(0),pf=order(L-1);let mv=null;pf.forEach((r,i)=>{const gain=p1.indexOf(r)-i;if(gain>=2&&(!mv||gain>mv.n))mv={r,n:gain,pos:i}});
+  if(mv)ev.push({t:mv.r.pass[L-1]-60,lap:L,key:"evMover",v:{a:mv.r.name,n:mv.n},focus:"battle:"+Math.max(2,mv.pos+1)});
+  // closest duel at the finish outside the win
+  let cl=null;for(let i=1;i<pf.length-1;i++){const d=pf[i+1].pass[L-1]-pf[i].pass[L-1];if(d<=6&&(!cl||d<cl.d))cl={d,i}}
+  if(cl)ev.push({t:pf[cl.i].pass[L-1]-35,lap:L,key:"evClose",v:{a:pf[cl.i].name,b:pf[cl.i+1].name,g:cl.d},focus:"battle:"+(cl.i+1)});
+  ev.push({t:winner.end-12,lap:L,key:"evFinish",v:{a:winner.name},focus:"leader"});
+  return ev.filter(e=>e.t>=0).sort((a,b)=>a.t-b.t)}
+const evText=e=>{const v={...e.v};if(v.a)v.a=last(v.a);if(v.b)v.b=last(v.b);if(v.g!=null)v.g=gs(v.g);return T(e.key,v)};
+
+/* ================= REPLAY STATE ================= */
+let races=[],race=null,t=0,playing=false,speed=30,follow=null,cam="overview",theta=-0.35,lastFrame=0;
+const camS={fx:0,fy:0,s:1,init:false};
+function setRaces(file){const list=(file&&Array.isArray(file.races)?file.races:[file]).filter(Boolean),built=[];
+  list.forEach((d,i)=>{try{built.push(buildRace(d,i))}catch(e){console.warn("skipped race",e.message)}});
+  if(!built.length)throw new Error("no races");races=built;selectRace(0)}
+function renderRaceSel(){const box=$("raceSel");box.innerHTML="";box.hidden=races.length<2;
+  races.forEach((r,i)=>{const b=document.createElement("button");b.type="button";b.textContent=r.title;b.setAttribute("aria-pressed",String(r===race));b.onclick=()=>selectRace(i);box.appendChild(b)})}
+function statusTag(){return {official:T("stOfficial"),reconstructed:T("stRecon"),estimated:T("stEst")}[race.status]||race.status}
+function selectRace(i,keepTime){
+  const prevT=t;race=races[i];if(!keepTime){t=0;follow=null;cam="overview";playing=false}lastOrder="";renderRaceSel();
+  const n=$("note");n.dataset.status=race.status;$("noteTag").textContent=(race.isDemo?T("demo"):"")+statusTag();
+  $("noteText").textContent=race.status==="official"?T("txOfficial"):race.status==="reconstructed"?T("txRecon",{n:race.anchorCount,s:race.anchorCount===1?"":(lang==="nl"?"en":"s")}):T("txEst");
+  const src=$("noteSrc");src.innerHTML="";if(race.sources.length){src.append(T("sources"));race.sources.forEach((s,k)=>{const a=document.createElement("a");a.href=s.url;a.target="_blank";a.rel="noopener";a.textContent=s.label||s.url;src.append(a);if(k<race.sources.length-1)src.append(" · ")})}
+  if(race.warnings.length)src.append(T("check")+race.warnings.join(", "));
+  const lj=$("lapJumps");lj.innerHTML="";const ref=race.riders[0];
+  for(let k=0;k<race.laps;k++){const b=document.createElement("button");b.type="button";b.textContent=T("lapBtn",{n:k+1});b.onclick=()=>{t=k?ref.pass[k-1]:0;syncScrub()};lj.appendChild(b)}
+  const fin=document.createElement("button");fin.type="button";fin.textContent=T("finishBtn");fin.onclick=()=>{t=race.duration;syncScrub()};lj.appendChild(fin);
+  const cs=$("camSel");cs.innerHTML="";[["overview",T("camOverview")],["leader",T("camLeader")]].concat(race.riders.slice(1).map((r,k)=>["battle:"+(k+2),T("camBattle",{n:k+2})])).forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;cs.appendChild(o)});cs.value=cam;
+  const cl=$("chapList");cl.innerHTML="";race.events.forEach(e=>{const b=document.createElement("button");b.type="button";b.className="chap";
+    b.innerHTML='<span class="when"></span><span></span>';b.firstChild.textContent=e.lap?T("lapShort",{n:e.lap}):"0:00";b.lastChild.textContent=evText(e);
+    b.onclick=()=>{t=Math.max(0,e.t);follow=null;cam=e.focus||"overview";$("camSel").value=cam;lastOrder="";syncScrub()};cl.appendChild(b)});
+  $("dataIn").value=JSON.stringify(race.def,null,1);$("cTitle").textContent=race.title;
+  $("cStatus").textContent=(race.isDemo?"Demo · ":"")+statusTag();
+  if(keepTime)t=prevT;else t=Math.max(0,(ref.pass[Math.min(1,ref.pass.length-1)])+40);
+  syncScrub();updatePlayLabels();fillProSel()}
+function syncScrub(){$("scrub").value=Math.round(t/race.duration*1000)}
+function updatePlayLabels(){const l=playing?T("pause"):(race&&t>=race.duration?T("replayAgain"):T("play"));$("play").textContent=l;$("cPlay").textContent=l}
+
+/* ================= STANDINGS ================= */
+function standings(){const list=race.riders.map(r=>({r,p:progressAt(r,t)}));list.sort((a,b)=>b.p-a.p||a.r.end-b.r.end);
+  const leader=list[0],winnerEnd=Math.min(...race.riders.filter(r=>r.finished).map(r=>r.end));
+  list.forEach((e,k)=>{const done=t>=e.r.end;
+    if(done&&e.r.finished){const g=e.r.end-winnerEnd;e.gap=g;e.label=g<0.5?fmt(e.r.end):"+"+fmt(g)}
+    else if(done)e.label=T("out");else if(k===0){e.gap=0;e.label=T("lapShort",{n:Math.min(race.laps,Math.floor(e.p)+1)})}
+    else{const g=t-timeAtProgress(leader.r,e.p);e.gap=g;e.label=isFinite(g)?"+"+fmt(g):"—"}});return list}
+const battleN=()=>cam.startsWith("battle:")?Number(cam.split(":")[1]):0;
+let lastOrder="";
+function renderBoard(list){const bn=battleN();const key=list.map(e=>e.r.idx+":"+e.label).join("|")+"|"+follow+"|"+cam+"|"+lang;if(key===lastOrder)return;lastOrder=key;
+  const box=$("rows");box.innerHTML="";
+  list.forEach((e,k)=>{const b=document.createElement("button");b.type="button";b.className="row"+(bn&&(k===bn-2||k===bn-1)?" battle":"");b.setAttribute("role","listitem");b.setAttribute("aria-pressed",String(follow===e.r.idx));
+    b.innerHTML='<span class="pos"></span><span class="dot"></span><span class="name"></span><span class="gap"></span>';
+    b.querySelector(".pos").textContent=k+1;b.querySelector(".dot").style.background=e.r.color;b.querySelector(".name").textContent=e.r.name;b.querySelector(".gap").textContent=e.label;
+    b.onclick=()=>{follow=follow===e.r.idx?null:e.r.idx;if(follow!==null){cam="overview";$("camSel").value=cam}lastOrder=""};box.appendChild(b)});
+  const fc=$("followChip");fc.hidden=follow===null&&!bn;fc.textContent=follow!==null?T("following",{n:last(race.riders[follow].name)})+" ✕":T("battleChip",{n:bn})+" ✕";
+  // clip list
+  const cl=$("cList");cl.innerHTML="";const show=bn?list.slice(Math.max(0,bn-3),Math.max(0,bn-3)+5):list.slice(0,5);
+  show.forEach(e=>{const k=list.indexOf(e);const d=document.createElement("div");d.className="crow";d.innerHTML='<span></span><span class="dot"></span><span class="n"></span><span class="g"></span>';
+    d.children[0].textContent=k+1;d.children[1].style.background=e.r.color;d.children[2].textContent=e.r.name;d.children[3].textContent=k===0?"":e.label;cl.appendChild(d)})}
+$("followChip").onclick=()=>{follow=null;cam="overview";$("camSel").value=cam;lastOrder=""};
+$("camSel").onchange=e=>{cam=e.target.value;follow=null;lastOrder=""};
+
+/* ================= DRAWING ================= */
+const cv=$("course"),ctx=cv.getContext("2d"),ev=$("elev"),ectx=ev.getContext("2d");let W=0,H=0,EW=0,EH=0,DPR=1;
+function resize(){DPR=Math.min(2,window.devicePixelRatio||1);const r=cv.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;
+  const e=ev.getBoundingClientRect();EW=e.width;EH=e.height;ev.width=EW*DPR;ev.height=EH*DPR;camS.init=false}
+new ResizeObserver(resize).observe($("stage"));new ResizeObserver(resize).observe(ev.parentElement);
+const VZ=2.4;
+function iso(x,y,z){const c=Math.cos(theta),s=Math.sin(theta);const rx=x*c-y*s,ry=x*s+y*c;return [(rx-ry)*0.866,(rx+ry)*0.5-z*VZ]}
+function boundsAll(){let a=1e9,b=-1e9,c=1e9,d=-1e9;const f=p=>{for(const z of [p.z,0]){const [x,y]=iso(p.x,p.y,z);a=Math.min(a,x);b=Math.max(b,x);c=Math.min(c,y);d=Math.max(d,y)}};LOOP.P.forEach(f);LAP1.P.forEach(f);return {a,b,c,d}}
+const nearest=(px,py)=>{let best=0,bd=1e18;LOOP.P.forEach((p,k)=>{const d=(p.x/M_PER_PX-px)**2+(p.y/M_PER_PX-py)**2;if(d<bd){bd=d;best=k}});return best};
+const LBL={pit:nearest(1308,545),zig:nearest(1140,612)};
+const cobMid=(()=>{const ks=LOOP.P.map((p,k)=>p.cob?k:-1).filter(k=>k>=0);return ks.length?ks[Math.floor(ks.length/2)]:0})();
+function drawCourse(list){
+  ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);if(!W)return;
+  const clip=document.body.classList.contains("clip");
+  const bb=boundsAll();let ts=Math.min(W/((bb.b-bb.a)*1.08),H/((bb.d-bb.c)*1.18));let tx=(bb.a+bb.b)/2,ty=(bb.c+bb.d)/2+(bb.d-bb.c)*0.04;
+  const focusOn=arr=>{let sx=0,sy=0;arr.forEach(e=>{const p=positionOf(Math.min(e.p,race.laps-1e-6));const [x,y]=iso(p.x,p.y,p.z);sx+=x;sy+=y});tx=sx/arr.length;ty=sy/arr.length};
+  const bn=battleN();
+  if(follow!==null){const e=list.find(e=>e.r.idx===follow);if(e){focusOn([e]);ts*=2.2}}
+  else if(cam==="leader"){focusOn([list[0]]);ts*=2.2}
+  else if(bn&&list[bn-1]){focusOn([list[bn-2],list[bn-1]]);ts*=2.0}
+  if(clip){ts=Math.min(W/((bb.b-bb.a)*1.08),(H*0.34)/((bb.d-bb.c)*1.1));if(follow!==null||cam!=="overview")ts*=2.0}
+  if(!camS.init)Object.assign(camS,{fx:tx,fy:ty,s:ts,init:true});
+  camS.fx+=(tx-camS.fx)*0.12;camS.fy+=(ty-camS.fy)*0.12;camS.s+=(ts-camS.s)*0.12;
+  const CY=clip?H*0.6:H/2;const S=(x,y,z)=>{const [a,b]=iso(x,y,z);return [W/2+(a-camS.fx)*camS.s,CY+(b-camS.fy)*camS.s]};
+  const ink=css("--ink"),muted=css("--muted"),line=css("--line"),course=css("--course"),climb=css("--climb"),tape=css("--tape"),panel=css("--panel");
+  const P=LOOP.P,N=LOOP.N;
+  ctx.beginPath();P.forEach((p,k)=>{const [x,y]=S(p.x,p.y,0);k?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.lineWidth=10;ctx.strokeStyle=css("--shadow");ctx.stroke();
+  ctx.strokeStyle=line;ctx.lineWidth=1;for(let k=0;k<N;k+=5){const p=P[k];const [x0,y0]=S(p.x,p.y,0),[x1,y1]=S(p.x,p.y,p.z);ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke()}
+  const w=Math.max(3,Math.min(9,camS.s*2.2));ctx.lineCap="round";ctx.lineJoin="round";
+  // start climb (lap 1 only)
+  ctx.setLineDash([w*1.2,w*1.2]);ctx.strokeStyle=climb;ctx.lineWidth=w*0.8;ctx.beginPath();
+  LAP1.P.forEach((p,k)=>{if(!p.lane&&k>0)return;const [x,y]=S(p.x,p.y,p.z);k?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle=panel;ctx.lineWidth=w+4;ctx.beginPath();P.forEach((p,k)=>{const [x,y]=S(p.x,p.y,p.z);k?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+  for(let k=0;k<N;k++){const a=P[k],b=P[k+1];const [x0,y0]=S(a.x,a.y,a.z),[x1,y1]=S(b.x,b.y,b.z);ctx.strokeStyle=a.cob?climb:course;ctx.lineWidth=w;ctx.beginPath();ctx.moveTo(x0,y0);ctx.lineTo(x1,y1);ctx.stroke()}
+  ctx.fillStyle=panel;for(let k=0;k<N;k+=2){if(!P[k].cob)continue;const [x,y]=S(P[k].x,P[k].y,P[k].z);ctx.fillRect(x-1,y-1,2,2)}
+  {const a=P[0],b=P[4];const [x0,y0]=S(a.x,a.y,a.z),[x1,y1]=S(b.x,b.y,b.z);const dx=x1-x0,dy=y1-y0,l=Math.hypot(dx,dy)||1,nx=-dy/l*(w+7),ny=dx/l*(w+7);ctx.strokeStyle=tape;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x0-nx,y0-ny);ctx.lineTo(x0+nx,y0+ny);ctx.stroke()}
+  const lab=(p,text,dy)=>{const [x,y]=S(p.x,p.y,p.z);ctx.font="500 11px "+css("--mono");ctx.fillStyle=muted;ctx.textAlign="center";ctx.fillText(text,x,y+dy)};
+  lab(P[0],"FINISH",-16);lab(P[LBL.pit],lang==="nl"?"MATERIAALPOST":"PIT",34);lab(P[LBL.zig],lang==="nl"?"ZIGZAGS":"ZIGZAGS",24);lab(P[cobMid],lang==="nl"?"KASSEIEN KOPPENBERG":"KOPPENBERG COBBLES",-30);lab(LAP1.P[0],"START · MELDEN",-12);
+  const pts=list.map((e,k)=>{const p=positionOf(Math.min(e.p,race.laps-1e-6));const l=Math.hypot(p.tx,p.ty)||1,off=((e.r.idx%3)-1)*5;return {e,k,xy:S(p.x-p.ty/l*off,p.y+p.tx/l*off,p.z)}});
+  pts.sort((a,b)=>a.xy[1]-b.xy[1]);
+  const big=clip?1.35:1;
+  pts.forEach(({e,k,xy})=>{const hl=follow===e.r.idx||(bn&&(k===bn-2||k===bn-1))||(cam==="leader"&&k===0),lead=k===0;const r=(hl?8:6)*big;ctx.globalAlpha=(t>=e.r.end&&!e.r.finished)?0.35:1;
+    ctx.beginPath();ctx.arc(xy[0],xy[1]-r-2,r,0,Math.PI*2);ctx.fillStyle=e.r.color;ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=panel;ctx.stroke();
+    if(hl||lead){ctx.font="600 "+Math.round(13*big)+"px "+css("--body");ctx.textAlign="left";const label=last(e.r.name),tw=ctx.measureText(label).width;
+      ctx.fillStyle=panel;ctx.fillRect(xy[0]+r+4,xy[1]-r-12*big,tw+10,19*big);ctx.fillStyle=ink;ctx.fillText(label,xy[0]+r+9,xy[1]-r+2*big)}
+    ctx.globalAlpha=1})}
+function drawElev(list){
+  ectx.setTransform(DPR,0,0,DPR,0,0);ectx.clearRect(0,0,EW,EH);if(!EW)return;const P=LOOP.P,N=LOOP.N;
+  const zs=P.map(p=>p.z),zmin=Math.min(...zs)-4,zmax=Math.max(...zs)+4,padL=38,padR=6,padT=10,padB=16;
+  const X=d=>padL+d*(EW-padL-padR),Y=z=>padT+(1-(z-zmin)/(zmax-zmin))*(EH-padT-padB);
+  const muted=css("--muted"),line=css("--line"),course=css("--course"),climb=css("--climb");
+  ectx.font="11px "+css("--mono");ectx.fillStyle=muted;ectx.textAlign="right";
+  [30,50,70].forEach(z=>{if(z<zmin||z>zmax)return;ectx.strokeStyle=line;ectx.lineWidth=1;ectx.beginPath();ectx.moveTo(padL,Y(z));ectx.lineTo(EW-padR,Y(z));ectx.stroke();ectx.fillText("~"+z+" m",padL-4,Y(z)+4)});
+  ectx.beginPath();ectx.moveTo(X(0),Y(zmin));P.forEach((p,k)=>ectx.lineTo(X(k/N),Y(p.z)));ectx.lineTo(X(1),Y(zmin));ectx.closePath();ectx.globalAlpha=0.16;ectx.fillStyle=course;ectx.fill();ectx.globalAlpha=1;
+  for(let k=0;k<N;k++){ectx.strokeStyle=P[k].cob?climb:course;ectx.lineWidth=2.5;ectx.beginPath();ectx.moveTo(X(k/N),Y(P[k].z));ectx.lineTo(X((k+1)/N),Y(P[k+1].z));ectx.stroke()}
+  ectx.textAlign="left";ectx.fillText("Finish",X(0)+2,EH-3);ectx.textAlign="right";ectx.fillText("Finish",X(1),EH-3);
+  list.slice().reverse().forEach(e=>{const p=positionOf(Math.min(e.p,race.laps-1e-6));let d=t>=e.r.end?1:p.loopD;const onLane=d==null;if(onLane)d=0;const z=onLane?Z_FOOT+(p.z-Z_FOOT):pointOn(LOOP,d).z;
+    ectx.globalAlpha=onLane?0.45:1;ectx.beginPath();ectx.arc(X(d),Y(Math.max(zmin,z))-5,follow===e.r.idx?6:4.5,0,Math.PI*2);ectx.fillStyle=e.r.color;ectx.fill();ectx.strokeStyle=css("--panel");ectx.lineWidth=1.5;ectx.stroke();ectx.globalAlpha=1})}
+let capKey="";
+function updateCaption(){const cap=$("caption");const e=race.events.filter(x=>x.t<=t&&t-x.t<45).pop();
+  if(!e){if(!cap.hidden)cap.hidden=true;capKey="";return}const k=e.key+e.t+lang;if(k===capKey)return;capKey=k;cap.hidden=false;
+  cap.innerHTML="<small></small><span></span>";cap.firstChild.textContent=e.lap?T("lapShort",{n:e.lap}):"Start";cap.lastChild.textContent=evText(e);
+  document.querySelectorAll(".chap").forEach((b,i)=>b.setAttribute("aria-current",String(race.events[i]===e)))}
+function frame(now){const dt=lastFrame?Math.min(0.1,(now-lastFrame)/1000):0;lastFrame=now;
+  if(race&&!$("view-replay").hidden){if(playing){t+=dt*speed;if(t>=race.duration){t=race.duration;playing=false;updatePlayLabels()}syncScrub()}
+    const list=standings();const lapTxt=t>=race.duration?T("finished"):(list[0].p<1&&positionOf(list[0].p).loopD==null?T("startStraight",{b:race.laps}):T("lap",{a:Math.min(race.laps,Math.floor(list[0].p)+1),b:race.laps}));
+    $("clock").textContent=fmt(t);$("cClock").textContent=fmt(t);$("lapLabel").textContent=lapTxt;$("cLap").textContent=lapTxt;
+    drawCourse(list);drawElev(list);renderBoard(list);updateCaption()}
+  if(duel.playing)drawDuel(now);
+  requestAnimationFrame(frame)}
+const togglePlay=()=>{if(t>=race.duration)t=0;playing=!playing;updatePlayLabels()};
+$("play").onclick=togglePlay;$("cPlay").onclick=togglePlay;
+$("cRestart").onclick=()=>{t=0;syncScrub();playing=true;updatePlayLabels()};
+$("scrub").oninput=e=>{t=e.target.value/1000*race.duration;if(t<race.duration&&!playing)updatePlayLabels()};
+$("speed").onchange=e=>{speed=Number(e.target.value)};
+$("clipBtn").onclick=()=>{document.body.classList.add("clip");window.scrollTo(0,0);lastOrder="";requestAnimationFrame(resize)};
+$("cExit").onclick=()=>{document.body.classList.remove("clip");lastOrder="";requestAnimationFrame(resize)};
+let drag=null;cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,th:theta};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener("pointermove",e=>{if(drag)theta=drag.th+(e.clientX-drag.x)*0.008});
+cv.addEventListener("pointerup",()=>drag=null);cv.addEventListener("pointercancel",()=>drag=null);
+
+/* ================= YOU VS THE PRO ================= */
+const duel={you:null,climb:null,playing:false,start:0,proIdx:0};
+function proOptions(){const out=[];races.forEach((R,ri)=>R.riders.slice(0,3).forEach((r,k)=>{if(!r.lapT.length)return;out.push({label:r.name+" · "+R.title,name:r.name,time:r.lapT[0]*CLIMB_SHARE})}));return out}
+function fillProSel(){const s=$("proSel"),cur=s.value;s.innerHTML="";proOptions().forEach((o,i)=>{const op=document.createElement("option");op.value=i;op.textContent=o.label+" · ~"+fmt(o.time);s.appendChild(op)});if(cur&&s.options[cur])s.value=cur;renderDuel()}
+$("proSel").onchange=()=>{duel.playing=false;renderDuel()};
+function haversine(a,b){const R=6371000,r=Math.PI/180,dl=(b.lat-a.lat)*r,dn=(b.lon-a.lon)*r;const h=Math.sin(dl/2)**2+Math.cos(a.lat*r)*Math.cos(b.lat*r)*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function findClimb(pts){
+  const d=[0];for(let i=1;i<pts.length;i++)d.push(d[i-1]+haversine(pts[i-1],pts[i]));
+  const e=pts.map((p,i)=>{let s=0,c=0;for(let j=Math.max(0,i-3);j<=Math.min(pts.length-1,i+3);j++){if(isFinite(pts[j].ele)){s+=pts[j].ele;c++}}return c?s/c:NaN});
+  let best=null,j0=0;
+  for(let i=0;i<pts.length;i++){while(j0<pts.length&&d[j0]-d[i]<450)j0++;for(let j=j0;j<pts.length&&d[j]-d[i]<=800;j++){const gain=e[j]-e[i],len=d[j]-d[i];
+    if(gain>=45&&gain<=80&&gain/len>=0.07){const grade=gain/len,score=gain-0.01*len;if(!best||score>best.score)best={i,j,gain,len,grade,score}}}}
+  if(!best)return null;const ti=pts[best.i].time,tj=pts[best.j].time;if(!isFinite(ti)||!isFinite(tj))return {...best,time:NaN};
+  return {...best,time:(tj-ti)/1000}}
+$("gpx").onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const xml=new DOMParser().parseFromString(rd.result,"application/xml");const tp=[...xml.getElementsByTagName("trkpt")];if(!tp.length)throw 0;
+      const pts=tp.map(n=>({lat:+n.getAttribute("lat"),lon:+n.getAttribute("lon"),ele:parseFloat((n.getElementsByTagName("ele")[0]||{}).textContent),time:Date.parse((n.getElementsByTagName("time")[0]||{}).textContent)}));
+      const c=findClimb(pts);if(!c){$("duelStatus").textContent=T("noClimb");return}if(!isFinite(c.time)){$("duelStatus").textContent=T("noTime");return}
+      duel.you=c.time;duel.climb=c;$("duelStatus").textContent=T("foundClimb",{d:Math.round(c.len),h:Math.round(c.gain),p:(c.grade*100).toFixed(1),t:fmt(c.time)});duel.playing=false;renderDuel()}
+    catch(err){$("duelStatus").textContent=T("badGpx")}};rd.readAsText(f)};
+$("manualGo").onclick=()=>{const v=parseT($("manualT").value);if(!isFinite(v)||v<30){$("duelStatus").textContent=T("badTime");return}duel.you=v;duel.climb=null;$("duelStatus").textContent="";duel.playing=false;renderDuel()};
+$("duelPlay").onclick=()=>{if(duel.you==null){$("duelStatus").textContent=T("badTime");return}duel.playing=true;duel.start=performance.now()};
+const ROAD_PROFILE=(()=>{const n=200,z=[],pace=[0];for(let k=0;k<=n;k++)z.push(Z_FOOT+(Z_TOP-Z_FOOT)*roadF(k/n));const len=ROAD_LEN_PX*M_PER_PX,ds=len/n;
+  for(let k=0;k<n;k++){const g=(z[k+1]-z[k])/ds;pace.push(pace[k]+1+9*Math.max(0,g)+(k/n>0.19?0.3:0))}return {n,z,tf:pace.map(v=>v/pace[n])}})();
+const roadDist=f=>{const tf=ROAD_PROFILE.tf;let lo=0,hi=ROAD_PROFILE.n;while(hi-lo>1){const m=(lo+hi)>>1;if(tf[m]<=f)lo=m;else hi=m}return (lo+(f-tf[lo])/((tf[hi]-tf[lo])||1))/ROAD_PROFILE.n};
+function renderDuel(){const o=proOptions()[Number($("proSel").value)||0];const v=$("verdict"),st=$("duelStats");
+  if(!o||duel.you==null){v.textContent="";st.innerHTML="";drawDuel(null);return}
+  const who=last(o.name),g=duel.you-o.time;
+  v.textContent=Math.abs(g)<1?T("vDraw",{who}):g>0?T("vFaster",{who,g:gs(g)}):T("vSlower",{who,g:gs(-g)});
+  const cells=[[T("sYou"),fmt(duel.you)],[T("sPro",{who}),"~"+fmt(o.time)],[T("sGap"),(g>=0?"+":"−")+gs(Math.abs(g))]];
+  if(duel.climb)cells.push([T("sClimb"),Math.round(duel.climb.len)+" m · "+(duel.climb.grade*100).toFixed(1)+"%"]);
+  st.innerHTML="";cells.forEach(([a,b])=>{const d=document.createElement("div");d.className="stat";d.innerHTML="<b></b><span></span>";d.firstChild.textContent=b;d.lastChild.textContent=a;st.appendChild(d)});drawDuel(null)}
+const dcv=$("duelCv"),dctx=dcv.getContext("2d");
+function drawDuel(now){const r=dcv.getBoundingClientRect(),w=r.width,h=r.height;if(!w)return;const dpr=Math.min(2,window.devicePixelRatio||1);if(dcv.width!==Math.round(w*dpr)){dcv.width=w*dpr;dcv.height=h*dpr}
+  dctx.setTransform(dpr,0,0,dpr,0,0);dctx.clearRect(0,0,w,h);const pad=24,X=f=>pad+f*(w-2*pad),Y=z=>h-pad-(z-Z_FOOT+4)/(Z_TOP-Z_FOOT+12)*(h-2*pad-20);
+  const P=ROAD_PROFILE;dctx.beginPath();dctx.moveTo(X(0),h);for(let k=0;k<=P.n;k++)dctx.lineTo(X(k/P.n),Y(P.z[k]));dctx.lineTo(X(1),h);dctx.closePath();dctx.globalAlpha=.15;dctx.fillStyle=css("--course");dctx.fill();dctx.globalAlpha=1;
+  for(let k=0;k<P.n;k++){dctx.strokeStyle=k/P.n>0.19?css("--climb"):css("--course");dctx.lineWidth=5;dctx.beginPath();dctx.moveTo(X(k/P.n),Y(P.z[k]));dctx.lineTo(X((k+1)/P.n),Y(P.z[k+1]));dctx.stroke()}
+  dctx.font="500 11px "+css("--mono");dctx.fillStyle=css("--muted");dctx.textAlign="left";dctx.fillText(lang==="nl"?"VOET · MELDEN":"FOOT · MELDEN",X(0),h-6);dctx.textAlign="right";dctx.fillText(lang==="nl"?"TOP · STEENGAT":"TOP · STEENGAT",X(1),Y(Z_TOP)-14);
+  const o=proOptions()[Number($("proSel").value)||0];if(!o||duel.you==null)return;
+  const span=Math.max(duel.you,o.time),dur=6000;let el=now&&duel.playing?Math.min(1,(now-duel.start)/dur)*span:span;if(now&&duel.playing&&el>=span)duel.playing=false;
+  const draw=(time,color,label,dy)=>{const f=Math.min(1,el/time),d=roadDist(f),z=P.z[Math.round(d*P.n)];const x=X(d),y=Y(z);
+    dctx.beginPath();dctx.arc(x,y-9,8,0,Math.PI*2);dctx.fillStyle=color;dctx.fill();dctx.strokeStyle=css("--panel");dctx.lineWidth=2;dctx.stroke();
+    dctx.font="600 13px "+css("--body");dctx.textAlign="center";dctx.fillStyle=css("--ink");dctx.fillText(label,x,y-24+dy)};
+  draw(o.time,COLORS[0],last(o.name),0);draw(duel.you,COLORS[1],T("you"),-18);
+  dctx.font="700 28px "+css("--display");dctx.textAlign="left";dctx.fillStyle=css("--ink");dctx.fillText(fmt(el),pad,pad+18)}
+
+/* ================= LAP LOGGER ================= */
+const LKEY="kr-logger-v2";
+let lg=store.get(LKEY)||{title:"Koppenbergcross 2026 · Elite vrouwen",laps:5,riders:Array.from({length:10},(_,i)=>({name:"Renner "+(i+1),times:[]})),startEpoch:null,base:0,history:[]};
+const lgNow=()=>lg.startEpoch==null?lg.base:lg.base+(Date.now()-lg.startEpoch)/1000,saveLg=()=>store.set(LKEY,lg);
+const lgExport=()=>({title:lg.title,laps:lg.laps,status:"official",sources:[{label:"Rondelogger",url:location.href.split("#")[0]}],riders:lg.riders.filter(r=>r.times.length).map(r=>({name:r.name,passings:r.times}))});
+function lgRender(){$("lgTitle").value=lg.title;$("lgLaps").value=lg.laps;$("lgRiders").value=lg.riders.map(r=>r.name).join("\n");
+  const box=$("lgTaps");box.innerHTML="";
+  lg.riders.forEach((r,i)=>{const b=document.createElement("button");b.type="button";b.className="tap";b.id="tap"+i;b.innerHTML='<span class="n"></span><span class="m"></span>';
+    b.querySelector(".n").textContent=r.name;b.querySelector(".m").textContent=r.times.length?T("lapAt",{n:r.times.length,t:fmt(r.times[r.times.length-1])}):T("noLaps");
+    b.onclick=()=>{if(lg.startEpoch==null){$("lgStatus").textContent=T("clockFirst");return}if(r.times.length>=lg.laps){$("lgStatus").textContent=T("hasAll",{r:r.name,n:lg.laps});return}
+      const tt=Math.round(lgNow()*10)/10;r.times.push(tt);lg.history.push(i);saveLg();$("lgStatus").textContent=T("tapped",{r:r.name,n:r.times.length,t:fmt(tt)});lgRender();
+      const nb=$("tap"+i);if(nb){nb.classList.add("flash");setTimeout(()=>nb.classList.remove("flash"),350)}};box.appendChild(b)});
+  $("lgStart").textContent=lg.startEpoch==null?T("startClock"):T("restartClock");$("lgOut").value=JSON.stringify(lgExport())}
+$("lgApply").onclick=()=>{const names=$("lgRiders").value.split("\n").map(s=>s.trim()).filter(Boolean),old=Object.fromEntries(lg.riders.map(r=>[r.name,r.times]));
+  lg.riders=names.map(n=>({name:n,times:old[n]||[]}));lg.title=$("lgTitle").value.trim()||lg.title;lg.laps=Math.max(1,Number($("lgLaps").value)||5);lg.history=lg.history.filter(i=>i<lg.riders.length);saveLg();lgRender();$("lgStatus").textContent=T("updated")};
+$("lgTitle").onchange=()=>{lg.title=$("lgTitle").value.trim();saveLg();lgRender()};
+$("lgLaps").onchange=()=>{lg.laps=Math.max(1,Number($("lgLaps").value)||5);saveLg();lgRender()};
+$("lgStart").onclick=()=>{lg.base=0;lg.startEpoch=Date.now();saveLg();lgRender();$("lgStatus").textContent=T("clockRun")};
+$("lgSync").onclick=()=>{const v=parseT($("lgSyncVal").value);if(isNaN(v)){$("lgStatus").textContent=T("typeTime");return}lg.base=v;lg.startEpoch=Date.now();saveLg();lgRender();$("lgStatus").textContent=T("synced",{t:fmt(v)})};
+$("lgUndo").onclick=()=>{const i=lg.history.pop();if(i==null||!lg.riders[i]){$("lgStatus").textContent=T("nothingUndo");return}const tt=lg.riders[i].times.pop();saveLg();lgRender();$("lgStatus").textContent=T("removed",{r:lg.riders[i].name,t:fmt(tt)})};
+$("lgClear").onclick=function(){if(this.dataset.armed){lg.riders.forEach(r=>r.times=[]);lg.history=[];saveLg();lgRender();this.textContent=T("clearTaps");delete this.dataset.armed;$("lgOutStatus").textContent=T("cleared")}
+  else{this.dataset.armed="1";this.textContent=T("clearAgain");setTimeout(()=>{delete this.dataset.armed;this.textContent=T("clearTaps")},3000)}};
+$("lgLoad").onclick=()=>{try{setRaces(lgExport());location.hash="#replay"}catch(e){$("lgOutStatus").textContent=T("tapFirst")}};
+function copyText(text,el,st){const sel=()=>{el.select();st.textContent=T("selected")};try{navigator.clipboard.writeText(text).then(()=>st.textContent=T("copied"),sel)}catch(e){sel()}}
+$("lgCopy").onclick=()=>copyText($("lgOut").value,$("lgOut"),$("lgOutStatus"));
+setInterval(()=>{$("lgClock").textContent=fmt(lgNow())},250);
+
+/* ================= DATA TAB ================= */
+function parseData(text){text=text.trim();if(!text)throw new Error("empty");if(text[0]==="{")return JSON.parse(text);
+  const riders=text.split("\n").map(l=>l.split(/[,;\t]/).map(s=>s.trim()).filter(Boolean)).filter(c=>c.length>1).map(c=>({name:c[0],passings:c.slice(1).map(parseT).filter(v=>!isNaN(v))}));
+  return {title:"Import",laps:Math.max(...riders.map(r=>r.passings.length)),riders}}
+$("dataLoad").onclick=()=>{try{setRaces(parseData($("dataIn").value));$("dataStatus").textContent=T("loaded");location.hash="#replay"}catch(e){$("dataStatus").textContent=T("cantRead")+e.message}};
+$("dataCopy").onclick=()=>copyText($("dataIn").value,$("dataIn"),$("dataStatus"));
+$("dataReset").onclick=()=>{loadFile().then(()=>{$("dataStatus").textContent=T("fileReloaded");location.hash="#replay"})};
+
+/* ================= ROUTING + BOOT ================= */
+function route(){const v=(location.hash||"#replay").slice(1),views=["replay","duel","logger","data"],cur=views.includes(v)?v:"replay";
+  views.forEach(n=>{$("view-"+n).hidden=n!==cur;const a=$("tab-"+n);if(n===cur)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  if(cur!=="replay")document.body.classList.remove("clip");
+  if(cur==="replay"){lastOrder="";requestAnimationFrame(resize)}if(cur==="duel")requestAnimationFrame(()=>drawDuel(null))}
+window.addEventListener("hashchange",route);
+async function loadFile(){try{const r=await fetch("race.json",{cache:"no-store"});if(!r.ok)throw new Error(r.status);setRaces(await r.json())}catch(e){setRaces(DEMO_FILE)}}
+setRaces(DEMO_FILE);applyLang();route();resize();requestAnimationFrame(frame);loadFile();
+window.__kr={buildRace,DEMO_FILE,LAP1_FACTOR,CLIMB_SHARE,findClimb,races:()=>races};
+})();
+</script>
+
+</body>
+</html>
