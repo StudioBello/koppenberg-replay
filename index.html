@@ -173,6 +173,23 @@ body.clip .caption{left:5%;right:5%;bottom:auto;top:29%;max-width:none;font-size
 .cfoot>span:last-child{white-space:nowrap}
 .cliptools{display:none}
 body.clip .cliptools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:10px}
+/* jouw plek + sjaal */
+.feed{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.feed li{display:grid;grid-template-columns:52px 10px minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 6px;border-radius:6px}
+.feed li:first-child{background:var(--tape-soft)}
+.feed li.empty{display:block;color:var(--muted);background:none}
+.feed .w{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.spotnext{font-family:var(--display);font-weight:600;font-size:20px;letter-spacing:.02em}
+.spotname{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;text-transform:none;font-weight:400}
+.lbl{font-size:12px;color:var(--muted)}
+.swatches{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sw{width:46px;height:30px;border-radius:6px;border:2px solid var(--line);padding:0;cursor:pointer}
+.sw[aria-pressed="true"]{border-color:var(--ink);outline:2px solid var(--ink);outline-offset:1px}
+.fontpick{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.fontpick button{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:20px;line-height:1.1}
+.fontpick button[aria-pressed="true"]{border-color:var(--ink);background:var(--panel);outline:2px solid var(--ink);outline-offset:1px}
+input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:2px;cursor:pointer}
+.scarfwrap canvas{width:100%;height:auto;border-radius:8px;display:block}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -191,6 +208,7 @@ body.clip .cliptools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
       <nav aria-label="Views">
         <a href="#replay" id="tab-replay" data-i18n="tabReplay"></a>
         <a href="#duel" id="tab-duel" data-i18n="tabDuel"></a>
+        <a href="#sjaal" id="tab-sjaal" data-i18n="tabScarf"></a>
         <a href="#logger" id="tab-logger" data-i18n="tabLogger"></a>
         <a href="#data" id="tab-data" data-i18n="tabData"></a>
       </nav>
@@ -208,7 +226,7 @@ body.clip .cliptools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
       <div class="stage" id="stage">
         <canvas id="course" aria-label="Course with riders"></canvas>
         <div class="hud"><div class="clock" id="clock">0:00</div><div class="lap" id="lapLabel"></div></div>
-        <div class="hud-r"><button class="chip" id="followChip" type="button" hidden></button></div>
+        <div class="hud-r"><button class="chip" id="scarfFor" type="button" hidden></button><button class="chip" id="followChip" type="button" hidden></button></div>
         <div class="caption" id="caption" hidden></div>
         <div class="hint" data-i18n="hint"></div>
         <div class="clipui" aria-hidden="true">
@@ -243,10 +261,44 @@ body.clip .cliptools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
         <label class="inl"><span data-i18n="speed"></span>
           <select id="speed"><option value="15">15×</option><option value="30" selected>30×</option><option value="60">60×</option><option value="120">120×</option></select>
         </label>
+        <label class="inl"><span data-i18n="spot"></span><select id="spotSel"></select></label>
         <button class="btn ghost" id="clipBtn" type="button" data-i18n="clipMode"></button>
       </div>
       <div class="laps" id="lapJumps"></div>
       <div class="chapters"><h3 data-i18n="chapters"></h3><div id="chapList"></div></div>
+    </div>
+    <div class="card" id="spotCard" style="margin-top:14px" hidden>
+      <h2><span data-i18n="spotTitle"></span> <small class="spotname" id="spotName"></small></h2>
+      <div class="spotnext" id="spotNext"></div>
+      <ol class="feed" id="spotFeed"></ol>
+    </div>
+    <p class="lbl" id="spotHint" style="margin:10px 2px 0" data-i18n="spotHint"></p>
+  </section>
+
+  <!-- SJAAL -->
+  <section id="view-sjaal" hidden>
+    <div class="grid2">
+      <div class="card">
+        <h2 data-i18n="scarfTitle"></h2>
+        <p data-i18n="scarfIntro"></p>
+        <div class="fields">
+          <label for="scRider"><span data-i18n="scarfRider"></span><select id="scRider"></select></label>
+          <div><div class="lbl" data-i18n="scarfColors"></div><div class="swatches" id="scSw"></div></div>
+          <div class="inline">
+            <label for="scC1"><span data-i18n="scarfOwn1"></span><input type="color" id="scC1" value="#1D2B5C"></label>
+            <label for="scC2"><span data-i18n="scarfOwn2"></span><input type="color" id="scC2" value="#F2C230"></label>
+          </div>
+          <div><div class="lbl" data-i18n="scarfFont"></div><div class="fontpick" id="scFont"></div></div>
+          <label for="scTop"><span data-i18n="scarfTopLine"></span><input type="text" id="scTop" maxlength="18"></label>
+          <div class="inline">
+            <button class="btn tape" id="scSave" type="button" data-i18n="scarfSave"></button>
+            <button class="btn ghost" id="scShare" type="button" data-i18n="scarfShare" hidden></button>
+          </div>
+          <div class="status" id="scStatus"></div>
+        </div>
+        <p style="font-size:12px" data-i18n="scarfPrivacy"></p>
+      </div>
+      <div class="card"><div class="scarfwrap" style="margin-top:12px"><canvas id="scCv" width="1080" height="1350" aria-label="Supporterssjaal"></canvas></div></div>
     </div>
   </section>
 
@@ -399,13 +451,24 @@ en:{eyebrow:"Cyclocross replay · Oudenaarde, Bult van Melden",presented:"presen
  loaded:"Loaded.",cantRead:"Couldn't read that: ",fileReloaded:"Race file reloaded.",howTitle:"How the replay is built",
  how:["<b>Official</b>: lap times from timing data or the lap logger are used as they are.","<b>Reconstructed</b>: the final result is real, plus every mid-race gap reported in live coverage (\"Gery at 14 seconds after lap 2\"). Gaps in between are filled in evenly.","<b>Estimated</b>: only the final result is known, so each gap grows evenly over the race.","Inside a lap, position follows a pace profile from the course itself: slower on cobbles, climbs and tight turns, faster on descents. The start climbs the whole Koppenberg from the foot in Melden; every lap ends on its upper half with the finish on top.","Key moments are derived from the same data, so on a reconstructed race they are approximations.","Gaps on the board are measured at each rider's own spot on the course."]}
 };
+Object.assign(STR.nl,{tabScarf:"Sjaal",spot:"Jouw plek",spNone:"Kies je plek",spFinish:"Finish op de top",spCobbles:"Kasseien van de Koppenberg",spPit:"Materiaalpost",spZig:"Zigzags",spDescent:"Snelle afdaling",spCustom:"Je eigen plek",camSpot:"Vanaf jouw plek",
+ spotTitle:"Aan jouw plek",spNext:"Volgende: {n} over {t}",spDone:"Iedereen is voorbij",spWait:"Nog niemand voorbij. Druk op Afspelen.",spFront:"vooraan",spotHint:"Tip: kies je plek langs het parcours, of klik erop. Je ziet de koers dan passeren zoals langs de dranghekken, met de radio tegen je oor.",
+ hint:"Sleep om te draaien · klik om je plek te kiezen · donker = kasseien · parcours naar de kaart van de organisator, hoogtes benaderd",
+ scarfTitle:"Supporterssjaal",scarfIntro:"Elke renner verdient een fanclub. Kies je renner, je kleuren en je letter, en we breien een sjaal die je kunt bewaren en delen.",scarfRider:"Renner",scarfColors:"Kleuren",scarfOwn1:"Eigen kleur 1",scarfOwn2:"Eigen kleur 2",scarfFont:"Letter",scarfTopLine:"Bovenste regel (bijvoorbeeld de naam van je fanclub)",scarfTopDefault:"SUPPORTERSCLUB",
+ scarfSave:"Bewaar als afbeelding",scarfShare:"Deel",scarfSaved:"Bewaard. Veel plezier ermee!",scarfPrivacy:"De sjaal wordt op je eigen toestel gemaakt. Niets wordt verstuurd of opgeslagen.",scarfWin:"Winnaar op de Koppenberg",scarfPos:"{p} op de Koppenberg",scarfFor:"Sjaal voor {n}",fontBlock:"BLOK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
+Object.assign(STR.en,{tabScarf:"Scarf",spot:"Your spot",spNone:"Pick your spot",spFinish:"Finish on top",spCobbles:"Koppenberg cobbles",spPit:"Pit",spZig:"Zigzags",spDescent:"Fast descent",spCustom:"Your own spot",camSpot:"From your spot",
+ spotTitle:"At your spot",spNext:"Next: {n} in {t}",spDone:"Everyone has passed",spWait:"Nobody has passed yet. Press Play.",spFront:"in front",spotHint:"Tip: pick your spot along the course, or click on it. You see the race pass like you do from behind the barriers, radio to your ear.",
+ hint:"Drag to rotate · click to pick your spot · dark = cobbles · course from the organiser's map, heights approximate",
+ scarfTitle:"Supporter scarf",scarfIntro:"Every rider deserves a fan club. Pick your rider, your colours and your lettering, and we'll knit a scarf you can save and share.",scarfRider:"Rider",scarfColors:"Colours",scarfOwn1:"Own colour 1",scarfOwn2:"Own colour 2",scarfFont:"Lettering",scarfTopLine:"Top line (your fan club's name, for example)",scarfTopDefault:"SUPPORTERS CLUB",
+ scarfSave:"Save as image",scarfShare:"Share",scarfSaved:"Saved. Enjoy!",scarfPrivacy:"The scarf is made on your own device. Nothing is sent or stored.",scarfWin:"Winner on the Koppenberg",scarfPos:"{p} on the Koppenberg",scarfFor:"Scarf for {n}",fontBlock:"BLOCK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
+const ordinal=p=>lang==="nl"?p+"e":p+(p%100>=11&&p%100<=13?"th":({1:"st",2:"nd",3:"rd"}[p%10]||"th"));
 let lang=store.get("kr-lang")||"nl";
 const T=(k,v={})=>{let s=(STR[lang][k]??STR.en[k]??k);return typeof s==="string"?s.replace(/\{(\w+)\}/g,(_,x)=>v[x]??""):s};
 const gs=s=>s<60?Math.round(s)+(lang==="nl"?" s":"s"):fmt(s);
 function applyLang(){document.documentElement.lang=lang;document.querySelectorAll("[data-i18n]").forEach(el=>el.textContent=T(el.dataset.i18n));
   $("howList").innerHTML=T("how").map(x=>"<li>"+x+"</li>").join("");
   $("lang-nl").setAttribute("aria-pressed",String(lang==="nl"));$("lang-en").setAttribute("aria-pressed",String(lang==="en"));
-  if(race){selectRace(races.indexOf(race),true)}lgRender();renderDuel();updatePlayLabels()}
+  if(race){selectRace(races.indexOf(race),true)}lgRender();renderDuel();updatePlayLabels();renderSpotSel();renderScarfControls();fillScarfRiders();drawScarf()}
 $("lang-nl").onclick=()=>{lang="nl";store.set("kr-lang",lang);applyLang()};
 $("lang-en").onclick=()=>{track("taal-en");lang="en";store.set("kr-lang",lang);applyLang()};
 
@@ -537,14 +600,14 @@ function selectRace(i,keepTime){
   const lj=$("lapJumps");lj.innerHTML="";const ref=race.riders[0];
   for(let k=0;k<race.laps;k++){const b=document.createElement("button");b.type="button";b.textContent=T("lapBtn",{n:k+1});b.onclick=()=>{t=k?ref.pass[k-1]:0;syncScrub()};lj.appendChild(b)}
   const fin=document.createElement("button");fin.type="button";fin.textContent=T("finishBtn");fin.onclick=()=>{t=race.duration;syncScrub()};lj.appendChild(fin);
-  const cs=$("camSel");cs.innerHTML="";[["overview",T("camOverview")],["leader",T("camLeader")]].concat(race.riders.slice(1).map((r,k)=>["battle:"+(k+2),T("camBattle",{n:k+2})])).forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;cs.appendChild(o)});cs.value=cam;
+  const cs=$("camSel");cs.innerHTML="";[["overview",T("camOverview")],["leader",T("camLeader")],["spot",T("camSpot")]].concat(race.riders.slice(1).map((r,k)=>["battle:"+(k+2),T("camBattle",{n:k+2})])).forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;cs.appendChild(o)});cs.value=cam;
   const cl=$("chapList");cl.innerHTML="";race.events.forEach(e=>{const b=document.createElement("button");b.type="button";b.className="chap";
     b.innerHTML='<span class="when"></span><span></span>';b.firstChild.textContent=e.lap?T("lapShort",{n:e.lap}):"0:00";b.lastChild.textContent=evText(e);
     b.onclick=()=>{t=Math.max(0,e.t);follow=null;cam=e.focus||"overview";$("camSel").value=cam;lastOrder="";syncScrub()};cl.appendChild(b)});
   $("dataIn").value=JSON.stringify(race.def,null,1);$("cTitle").textContent=race.title;
   $("cStatus").textContent=(race.isDemo?"Demo · ":"")+statusTag();
   if(keepTime)t=prevT;else t=Math.max(0,(ref.pass[Math.min(1,ref.pass.length-1)])+40);
-  syncScrub();updatePlayLabels();fillProSel()}
+  syncScrub();updatePlayLabels();fillProSel();spotKey="";fillScarfRiders()}
 function syncScrub(){$("scrub").value=Math.round(t/race.duration*1000)}
 function updatePlayLabels(){const l=playing?T("pause"):(race&&t>=race.duration?T("replayAgain"):T("play"));$("play").textContent=l;$("cPlay").textContent=l}
 
@@ -563,13 +626,14 @@ function renderBoard(list){const bn=battleN();const key=list.map(e=>e.r.idx+":"+
     b.innerHTML='<span class="pos"></span><span class="dot"></span><span class="name"></span><span class="gap"></span>';
     b.querySelector(".pos").textContent=k+1;b.querySelector(".dot").style.background=e.r.color;b.querySelector(".name").textContent=e.r.name;b.querySelector(".gap").textContent=e.label;
     b.onclick=()=>{follow=follow===e.r.idx?null:e.r.idx;if(follow!==null){cam="overview";$("camSel").value=cam}lastOrder=""};box.appendChild(b)});
+  const sf=$("scarfFor");sf.hidden=follow===null;if(follow!==null)sf.textContent=T("scarfFor",{n:last(race.riders[follow].name)});
   const fc=$("followChip");fc.hidden=follow===null&&!bn;fc.textContent=follow!==null?T("following",{n:last(race.riders[follow].name)})+" ✕":T("battleChip",{n:bn})+" ✕";
   // clip list
   const cl=$("cList");cl.innerHTML="";const show=bn?list.slice(Math.max(0,bn-3),Math.max(0,bn-3)+5):list.slice(0,5);
   show.forEach(e=>{const k=list.indexOf(e);const d=document.createElement("div");d.className="crow";d.innerHTML='<span></span><span class="dot"></span><span class="n"></span><span class="g"></span>';
     d.children[0].textContent=k+1;d.children[1].style.background=e.r.color;d.children[2].textContent=e.r.name;d.children[3].textContent=k===0?"":e.label;cl.appendChild(d)})}
 $("followChip").onclick=()=>{follow=null;cam="overview";$("camSel").value=cam;lastOrder=""};
-$("camSel").onchange=e=>{cam=e.target.value;follow=null;lastOrder=""};
+$("camSel").onchange=e=>{cam=e.target.value;follow=null;lastOrder="";if(cam==="spot"&&!spot)setSpot("cobbles")};
 
 /* ================= DRAWING ================= */
 const cv=$("course"),ctx=cv.getContext("2d"),ev=$("elev"),ectx=ev.getContext("2d");let W=0,H=0,EW=0,EH=0,DPR=1;
@@ -591,10 +655,11 @@ function drawCourse(list){
   if(follow!==null){const e=list.find(e=>e.r.idx===follow);if(e){focusOn([e]);ts*=2.2}}
   else if(cam==="leader"){focusOn([list[0]]);ts*=2.2}
   else if(bn&&list[bn-1]){focusOn([list[bn-2],list[bn-1]]);ts*=2.0}
+  else if(cam==="spot"&&spot){const p=LOOP.P[spot.k];const [x,y]=iso(p.x,p.y,p.z);tx=x;ty=y;ts*=2.4}
   if(clip){ts=Math.min(W/((bb.b-bb.a)*1.08),(H*0.34)/((bb.d-bb.c)*1.1));if(follow!==null||cam!=="overview")ts*=2.0}
   if(!camS.init)Object.assign(camS,{fx:tx,fy:ty,s:ts,init:true});
   camS.fx+=(tx-camS.fx)*0.12;camS.fy+=(ty-camS.fy)*0.12;camS.s+=(ts-camS.s)*0.12;
-  const CY=clip?H*0.6:H/2;const S=(x,y,z)=>{const [a,b]=iso(x,y,z);return [W/2+(a-camS.fx)*camS.s,CY+(b-camS.fy)*camS.s]};
+  const CY=clip?H*0.6:H/2;const S=(x,y,z)=>{const [a,b]=iso(x,y,z);return [W/2+(a-camS.fx)*camS.s,CY+(b-camS.fy)*camS.s]};lastS=S;
   const ink=css("--ink"),muted=css("--muted"),line=css("--line"),course=css("--course"),climb=css("--climb"),tape=css("--tape"),panel=css("--panel");
   const P=LOOP.P,N=LOOP.N;
   ctx.beginPath();P.forEach((p,k)=>{const [x,y]=S(p.x,p.y,0);k?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.lineWidth=10;ctx.strokeStyle=css("--shadow");ctx.stroke();
@@ -608,7 +673,10 @@ function drawCourse(list){
   ctx.fillStyle=panel;for(let k=0;k<N;k+=2){if(!P[k].cob)continue;const [x,y]=S(P[k].x,P[k].y,P[k].z);ctx.fillRect(x-1,y-1,2,2)}
   {const a=P[0],b=P[4];const [x0,y0]=S(a.x,a.y,a.z),[x1,y1]=S(b.x,b.y,b.z);const dx=x1-x0,dy=y1-y0,l=Math.hypot(dx,dy)||1,nx=-dy/l*(w+7),ny=dx/l*(w+7);ctx.strokeStyle=tape;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x0-nx,y0-ny);ctx.lineTo(x0+nx,y0+ny);ctx.stroke()}
   const lab=(p,text,dy)=>{const [x,y]=S(p.x,p.y,p.z);ctx.font="500 11px "+css("--mono");ctx.fillStyle=muted;ctx.textAlign="center";ctx.fillText(text,x,y+dy)};
-  lab(P[0],"FINISH",-16);lab(P[LBL.pit],lang==="nl"?"MATERIAALPOST":"PIT",34);lab(P[LBL.zig],lang==="nl"?"ZIGZAGS":"ZIGZAGS",24);lab(P[cobMid],lang==="nl"?"KASSEIEN KOPPENBERG":"KOPPENBERG COBBLES",-30);lab(LAP1.P[0],"START · MELDEN",-12);
+  lab(P[0],"FINISH",-16);lab(P[LBL.pit],lang==="nl"?"MATERIAALPOST":"PIT",34);lab(P[LBL.zig],lang==="nl"?"ZIGZAGS":"ZIGZAGS",24);if(!spot||Math.abs(spot.k-cobMid)>60)lab(P[cobMid],lang==="nl"?"KASSEIEN KOPPENBERG":"KOPPENBERG COBBLES",-30);lab(LAP1.P[0],"START · MELDEN",-12);
+  if(spot){const p=P[spot.k];const [x,y]=S(p.x,p.y,p.z);ctx.strokeStyle=ink;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-30);ctx.stroke();
+    ctx.fillStyle=tape;ctx.beginPath();ctx.moveTo(x,y-30);ctx.lineTo(x+18,y-25);ctx.lineTo(x,y-20);ctx.closePath();ctx.fill();
+    ctx.font="600 11px "+css("--mono");ctx.textAlign="center";ctx.fillStyle=ink;ctx.fillText(T("you").toUpperCase(),x,y-36)}
   const pts=list.map((e,k)=>{const p=positionOf(Math.min(e.p,race.laps-1e-6));const l=Math.hypot(p.tx,p.ty)||1,off=((e.r.idx%3)-1)*5;return {e,k,xy:S(p.x-p.ty/l*off,p.y+p.tx/l*off,p.z)}});
   pts.sort((a,b)=>a.xy[1]-b.xy[1]);
   const big=clip?1.35:1;
@@ -627,6 +695,7 @@ function drawElev(list){
   ectx.beginPath();ectx.moveTo(X(0),Y(zmin));P.forEach((p,k)=>ectx.lineTo(X(k/N),Y(p.z)));ectx.lineTo(X(1),Y(zmin));ectx.closePath();ectx.globalAlpha=0.16;ectx.fillStyle=course;ectx.fill();ectx.globalAlpha=1;
   for(let k=0;k<N;k++){ectx.strokeStyle=P[k].cob?climb:course;ectx.lineWidth=2.5;ectx.beginPath();ectx.moveTo(X(k/N),Y(P[k].z));ectx.lineTo(X((k+1)/N),Y(P[k+1].z));ectx.stroke()}
   ectx.textAlign="left";ectx.fillText("Finish",X(0)+2,EH-3);ectx.textAlign="right";ectx.fillText("Finish",X(1),EH-3);
+  if(spot){ectx.strokeStyle=css("--tape");ectx.lineWidth=1.5;ectx.setLineDash([3,3]);ectx.beginPath();ectx.moveTo(X(spot.k/N),padT);ectx.lineTo(X(spot.k/N),EH-padB);ectx.stroke();ectx.setLineDash([])}
   list.slice().reverse().forEach(e=>{const p=positionOf(Math.min(e.p,race.laps-1e-6));let d=t>=e.r.end?1:p.loopD;const onLane=d==null;if(onLane)d=0;const z=onLane?Z_FOOT+(p.z-Z_FOOT):pointOn(LOOP,d).z;
     ectx.globalAlpha=onLane?0.45:1;ectx.beginPath();ectx.arc(X(d),Y(Math.max(zmin,z))-5,follow===e.r.idx?6:4.5,0,Math.PI*2);ectx.fillStyle=e.r.color;ectx.fill();ectx.strokeStyle=css("--panel");ectx.lineWidth=1.5;ectx.stroke();ectx.globalAlpha=1})}
 let capKey="";
@@ -638,7 +707,7 @@ function frame(now){const dt=lastFrame?Math.min(0.1,(now-lastFrame)/1000):0;last
   if(race&&!$("view-replay").hidden){if(playing){t+=dt*speed;if(t>=race.duration){t=race.duration;playing=false;updatePlayLabels()}syncScrub()}
     const list=standings();const lapTxt=t>=race.duration?T("finished"):(list[0].p<1&&positionOf(list[0].p).loopD==null?T("startStraight",{b:race.laps}):T("lap",{a:Math.min(race.laps,Math.floor(list[0].p)+1),b:race.laps}));
     $("clock").textContent=fmt(t);$("cClock").textContent=fmt(t);$("lapLabel").textContent=lapTxt;$("cLap").textContent=lapTxt;
-    drawCourse(list);drawElev(list);renderBoard(list);updateCaption()}
+    drawCourse(list);drawElev(list);renderBoard(list);updateCaption();renderSpot()}
   if(duel.playing)drawDuel(now);
   requestAnimationFrame(frame)}
 const togglePlay=()=>{if(t>=race.duration)t=0;playing=!playing;updatePlayLabels()};
@@ -648,9 +717,139 @@ $("scrub").oninput=e=>{t=e.target.value/1000*race.duration;if(t<race.duration&&!
 $("speed").onchange=e=>{speed=Number(e.target.value)};
 $("clipBtn").onclick=()=>{track("clipmodus");document.body.classList.add("clip");window.scrollTo(0,0);lastOrder="";requestAnimationFrame(resize)};
 $("cExit").onclick=()=>{document.body.classList.remove("clip");lastOrder="";requestAnimationFrame(resize)};
-let drag=null;cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,th:theta};cv.setPointerCapture(e.pointerId)});
+let drag=null;cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,th:theta};cv.setPointerCapture(e.pointerId)});
 cv.addEventListener("pointermove",e=>{if(drag)theta=drag.th+(e.clientX-drag.x)*0.008});
-cv.addEventListener("pointerup",()=>drag=null);cv.addEventListener("pointercancel",()=>drag=null);
+cv.addEventListener("pointerup",e=>{if(drag&&Math.abs(e.clientX-drag.x)<5&&Math.abs(e.clientY-drag.y)<5)pickSpotAt(e);drag=null});cv.addEventListener("pointercancel",()=>drag=null);
+
+/* ================= JOUW PLEK ================= */
+let spot=null,lastS=null,spotCache={key:""},spotKey="";
+const descIdx=(()=>{let best=0,bv=1e9,w=30;for(let k=0;k+w<LOOP.N;k++){const g=LOOP.P[k+w].z-LOOP.P[k].z;if(g<bv){bv=g;best=k+w/2}}return best|0})();
+const SPOTS={finish:0,cobbles:cobMid,pit:LBL.pit,zig:LBL.zig,descent:descIdx};
+function setSpot(id,k){spot=id?{id,k:id==="custom"?k:SPOTS[id]}:null;spotKey="";spotCache.key="";renderSpotSel();lastOrder="";
+  $("spotCard").hidden=!spot;$("spotHint").hidden=!!spot;if(!spot&&cam==="spot"){cam="overview";$("camSel").value=cam}}
+function renderSpotSel(){const s=$("spotSel");s.innerHTML="";
+  [["",T("spNone")],["finish",T("spFinish")],["cobbles",T("spCobbles")],["pit",T("spPit")],["zig",T("spZig")],["descent",T("spDescent")]].concat(spot&&spot.id==="custom"?[["custom",T("spCustom")]]:[])
+   .forEach(([v,l])=>{const o=document.createElement("option");o.value=v;o.textContent=l;s.appendChild(o)});
+  s.value=spot?spot.id:"";$("spotName").textContent=spot?s.options[s.selectedIndex].textContent:"";spotKey=""}
+$("spotSel").onchange=e=>{const v=e.target.value;if(v)track("plek-"+v);setSpot(v||null)};
+function pickSpotAt(e){if(!lastS)return;const r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;let best=-1,bd=900;
+  LOOP.P.forEach((p,k)=>{const [x,y]=lastS(p.x,p.y,p.z);const d=(x-mx)**2+(y-my)**2;if(d<bd){bd=d;best=k}});
+  if(best>=0){track("plek-eigen");setSpot("custom",best)}}
+function spotPasses(){const key=races.indexOf(race)+"|"+race.id+"|"+spot.k;if(spotCache.key===key)return spotCache.passes;
+  const d=spot.k===0?0.9995:spot.k/LOOP.N,all=[],lap1F=[];let prev=null;
+  for(let j=0;j<=LAP1.N;j++){const ld=LAP1.P[j].loopD;if(ld==null)continue;const diff=Math.abs(ld-d);
+    if(diff<0.004){if(prev==null||j-prev>40)lap1F.push({j,diff});else if(diff<lap1F[lap1F.length-1].diff)lap1F[lap1F.length-1]={j,diff};prev=j}}
+  race.riders.forEach(r=>{const ts=[];for(let i=0;i<r.pass.length;i++){const st=i?r.pass[i-1]:0;const fs=i===0?lap1F.map(o=>o.j/LAP1.N):[d];
+      fs.forEach(f=>ts.push(st+r.lapT[i]*timeFrac(trackFor(i),f)))}
+    ts.sort((a,b)=>a-b).forEach((t,n)=>all.push({t,r,n}))});
+  const first={};all.forEach(p=>{if(first[p.n]==null||p.t<first[p.n])first[p.n]=p.t});all.forEach(p=>p.gap=p.t-first[p.n]);all.sort((a,b)=>a.t-b.t);
+  spotCache={key,passes:all};return all}
+function renderSpot(){if(!spot)return;const ps=spotPasses();let li=-1;for(let i=0;i<ps.length;i++){if(ps[i].t<=t)li=i;else break}
+  const nx=ps[li+1];$("spotNext").textContent=nx?T("spNext",{n:last(nx.r.name),t:fmt(nx.t-t)}):T("spDone");
+  const key=li+"|"+lang+"|"+spot.k+"|"+race.id;if(key===spotKey)return;spotKey=key;const ul=$("spotFeed");ul.innerHTML="";
+  if(li<0){const e=document.createElement("li");e.className="empty";e.textContent=T("spWait");ul.appendChild(e);return}
+  for(let i=li;i>=Math.max(0,li-7);i--){const p=ps[i],e=document.createElement("li");e.innerHTML='<span class="w"></span><span class="dot"></span><span class="name"></span><span class="gap"></span>';
+    e.children[0].textContent=fmt(p.t);e.children[1].style.background=p.r.color;e.children[2].textContent=p.r.name;e.children[3].textContent=p.gap<0.5?T("spFront"):"+"+fmt(p.gap);ul.appendChild(e)}}
+
+/* ================= SUPPORTERSSJAAL ================= */
+const SC_PAL=[["#1D2B5C","#F2C230"],["#B5121B","#FFFFFF"],["#0E5E3C","#F3EDD7"],["#151515","#F47B20"],["#5B2A86","#FFFFFF"],["#E30613","#FFD400"],
+  ["#003F87","#FFFFFF"],["#111111","#FFFFFF"],["#6A0F1A","#8EC1E8"],["#F28C28","#1B1B1B"],["#00843D","#FFD100"],["#E4007C","#151515"],
+  ["#2C4A2E","#C9A227"],["#F1F1F1","#C8102E"],["#0095DA","#FFFFFF"],["#FFD100","#111111"],["#7A1F2B","#F2E6C9"],["#1B6E8C","#F7A440"]];
+const SC_STYLES=[["blok","fontBlock"],["college","fontCollege"],["retro","fontRetro"]];
+let scPal=0,scStyle="blok",scCustom=null;
+// Knitted 5x7 letters, the way scarves are charted: every # is one stitch.
+const GLYPH={A:".###.|#...#|#...#|#####|#...#|#...#|#...#",B:"####.|#...#|#...#|####.|#...#|#...#|####.",C:".####|#....|#....|#....|#....|#....|.####",
+D:"####.|#...#|#...#|#...#|#...#|#...#|####.",E:"#####|#....|#....|####.|#....|#....|#####",F:"#####|#....|#....|####.|#....|#....|#....",
+G:".####|#....|#....|#.###|#...#|#...#|.####",H:"#...#|#...#|#...#|#####|#...#|#...#|#...#",I:"###|.#.|.#.|.#.|.#.|.#.|###",
+J:"..###|...#.|...#.|...#.|#..#.|#..#.|.##..",K:"#...#|#..#.|#.#..|##...|#.#..|#..#.|#...#",L:"#....|#....|#....|#....|#....|#....|#####",
+M:"#...#|##.##|#.#.#|#.#.#|#...#|#...#|#...#",N:"#...#|##..#|#.#.#|#..##|#...#|#...#|#...#",O:".###.|#...#|#...#|#...#|#...#|#...#|.###.",
+P:"####.|#...#|#...#|####.|#....|#....|#....",Q:".###.|#...#|#...#|#...#|#.#.#|#..#.|.##.#",R:"####.|#...#|#...#|####.|#.#..|#..#.|#...#",
+S:".####|#....|#....|.###.|....#|....#|####.",T:"#####|..#..|..#..|..#..|..#..|..#..|..#..",U:"#...#|#...#|#...#|#...#|#...#|#...#|.###.",
+V:"#...#|#...#|#...#|#...#|#...#|.#.#.|..#..",W:"#...#|#...#|#...#|#.#.#|#.#.#|##.##|#...#",X:"#...#|#...#|.#.#.|..#..|.#.#.|#...#|#...#",
+Y:"#...#|#...#|.#.#.|..#..|..#..|..#..|..#..",Z:"#####|....#|...#.|..#..|.#...|#....|#####",
+0:".###.|#...#|#..##|#.#.#|##..#|#...#|.###.",1:"..#..|.##..|..#..|..#..|..#..|..#..|.###.",2:".###.|#...#|....#|...#.|..#..|.#...|#####",
+3:"####.|....#|....#|.###.|....#|....#|####.",4:"...#.|..##.|.#.#.|#..#.|#####|...#.|...#.",5:"#####|#....|####.|....#|....#|#...#|.###.",
+6:".###.|#....|#....|####.|#...#|#...#|.###.",7:"#####|....#|...#.|..#..|.#...|.#...|.#...",8:".###.|#...#|#...#|.###.|#...#|#...#|.###.",
+9:".###.|#...#|#...#|.####|....#|....#|.###.",
+" ":"...|...|...|...|...|...|...","-":"...|...|...|###|...|...|...",".":".|.|.|.|.|.|#","'":"#|#|.|.|.|.|.","!":"#|#|#|#|#|.|#",
+"&":".#...|#.#..|#.#..|.#...|#.#.#|#..#.|.##.#","/":"....#|...#.|...#.|..#..|.#...|.#...|#....","?":".###.|#...#|....#|...#.|..#..|.....|..#.."};
+const scClean=s=>String(s||"").toUpperCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^A-Z0-9 \-.'!&\/?]/g,"");
+function scBitmap(text){const rows=Array.from({length:7},()=>[]);[...scClean(text)].forEach((ch,i)=>{const g=(GLYPH[ch]||GLYPH["?"]).split("|");
+    if(i)rows.forEach(r=>r.push(0));g.forEach((line,r)=>{for(const c of line)rows[r].push(c==="#"?1:0)})});
+  return rows}
+const scWidth=(text,sx,italic,shadow)=>scBitmap(text)[0].length*sx+(italic?3:0)+(shadow?1:0);
+function scStamp(grid,text,row0,sy,color,o){const sx=o.sx||1,bm=scBitmap(text),h=7*sy,w=bm[0].length*sx,cols=grid[0].length;
+  const x0=Math.floor((cols-w-(o.italic?3:0))/2),put=(r,c,col)=>{if(grid[r]&&c>=0&&c<cols)grid[r][c]=col};
+  const each=fn=>{for(let r=0;r<h;r++){const src=bm[Math.floor(r/sy)],sh=o.italic?Math.floor((h-1-r)*3/h):0;src.forEach((v,c)=>{if(v)for(let k=0;k<sx;k++)fn(row0+r,x0+c*sx+k+sh)})}};
+  if(o.shadow)each((r,c)=>put(r+1,c+1,o.shadow));each((r,c)=>put(r,c,color))}
+function scarfOptions(){const out=[];races.forEach(R=>{const so=R.riders.slice().sort((a,b)=>a.end-b.end),w=so[0].end;
+  so.forEach((r,k)=>{if(!r.finished)return;const res=(R.def.result||[]).find(x=>String(x.name).trim()===r.name);
+    out.push({key:r.name+"|"+R.title,name:r.name,pos:k+1,gap:k===0?"":(res&&res.gap?String(res.gap).replace(/^\+/,""):fmt(r.end-w)),race:R.title,year:(R.title.match(/\b(19|20)\d\d\b/)||[""])[0]})})});return out}
+function fillScarfRiders(pref){const s=$("scRider");if(!s||!race)return;const o=scarfOptions(),cur=pref||s.dataset.key;s.innerHTML="";
+  o.forEach((x,i)=>{const op=document.createElement("option");op.value=i;op.textContent=x.name+" · "+ordinal(x.pos)+" · "+x.race;s.appendChild(op)});
+  let idx=o.findIndex(x=>x.key===cur);if(idx<0){const inR=o.filter(x=>x.race===race.title);idx=o.indexOf(inR[Math.floor(inR.length/2)]||o[0])}
+  s.value=Math.max(0,idx);s.dataset.key=o[s.value]?o[s.value].key:""}
+function renderScarfControls(){const sw=$("scSw");sw.innerHTML="";SC_PAL.forEach((p,i)=>{const b=document.createElement("button");b.type="button";b.className="sw";
+    b.style.background="linear-gradient(90deg,"+p[0]+" 0 50%,"+p[1]+" 50% 100%)";b.setAttribute("aria-label",p.join(" + "));b.setAttribute("aria-pressed",String(!scCustom&&i===scPal));
+    b.onclick=()=>{scPal=i;scCustom=null;$("scC1").value=p[0];$("scC2").value=p[1];renderScarfControls();drawScarf()};sw.appendChild(b)});
+  const fp=$("scFont");fp.innerHTML="";SC_STYLES.forEach(([st,k])=>{const b=document.createElement("button");b.type="button";b.textContent=T(k);
+    b.style.fontFamily="var(--display)";b.style.fontWeight="700";b.style.letterSpacing=".06em";
+    if(st==="college")b.style.textShadow="2px 2px 0 var(--muted)";if(st==="retro")b.style.fontStyle="italic";
+    b.setAttribute("aria-pressed",String(st===scStyle));b.onclick=()=>{scStyle=st;renderScarfControls();drawScarf()};fp.appendChild(b)});
+  $("scTop").placeholder=T("scarfTopDefault")}
+const scRGB=hex=>{const n=parseInt(hex.slice(1),16);return [n>>16,n>>8&255,n&255]};
+const scShade=(hex,a)=>{let [r,g,b]=scRGB(hex);const t=a<0?0:255,f=Math.abs(a);r=Math.round(r+(t-r)*f);g=Math.round(g+(t-g)*f);b=Math.round(b+(t-b)*f);return "#"+[r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("")};
+const scLum=hex=>{const [r,g,b]=scRGB(hex);return (0.299*r+0.587*g+0.114*b)/255};
+let scFontsReady=null;
+function loadScarfFonts(){if(!scFontsReady)scFontsReady=Promise.all(['700 60px "Barlow Condensed"','800 20px "Barlow Condensed"','500 30px "IBM Plex Sans"'].map(f=>document.fonts.load(f).catch(()=>{})));return scFontsReady}
+function drawScarf(){const cv2=$("scCv");if(!cv2||$("view-sjaal").hidden)return;const o=scarfOptions()[Number($("scRider").value)||0];if(!o)return;
+  const g=cv2.getContext("2d"),W=1080,H=1350,[c1,c2]=scCustom||SC_PAL[scPal];
+  const st={sx:2,italic:scStyle==="retro",shadow:scStyle==="college"?scShade(c2,scLum(c2)>0.5?-0.45:0.45):null};
+  const COLS=112,S=8;
+  // lay out the lines
+  const top=scClean(($("scTop").value||"").trim()||T("scarfTopDefault")).slice(0,18)||scClean(T("scarfTopDefault"));
+  const nm=scClean(o.name),avail=COLS-6,wOf=(t,sx=2)=>scWidth(t,sx,st.italic,!!st.shadow);
+  let lines=[nm];if(wOf(nm)>avail){const w=nm.split(" ");let best=1,bd=1e9;for(let i=1;i<w.length;i++){const a=wOf(w.slice(0,i).join(" ")),b=wOf(w.slice(i).join(" "));const m=Math.max(a,b);if(m<bd){bd=m;best=i}}lines=[w.slice(0,best).join(" "),w.slice(best).join(" ")]}
+  if(lines.some(l=>wOf(l)>avail)){lines=[nm];if(wOf(nm,1)>avail){const w=nm.split(" ");let best=1,bd=1e9;for(let i=1;i<w.length;i++){const m=Math.max(wOf(w.slice(0,i).join(" "),1),wOf(w.slice(i).join(" "),1));if(m<bd){bd=m;best=i}}lines=[w.slice(0,best).join(" "),w.slice(best).join(" ")]}}
+  const nameOpt=lines.some(l=>wOf(l)>avail)?{...st,sx:1}:st;
+  const sub=scClean("KOPPENBERG"+(o.year?" "+o.year:""));
+  const BAND=7,ROWS=BAND+3+7+3+lines.length*14+(lines.length-1)*3+3+7+3+BAND;
+  const grid=Array.from({length:ROWS},()=>Array(COLS).fill(c1));
+  const band=r0=>{grid[r0].fill(c2);grid[r0+1].fill(c2);grid[r0+2]=grid[r0+2].map((_,i)=>i%2?c1:c2);grid[r0+3].fill(c2);grid[r0+4].fill(c2);grid[r0+6].fill(c2)};
+  band(0);{const r0=ROWS-BAND;grid[r0].fill(c2);grid[r0+2].fill(c2);grid[r0+3].fill(c2);grid[r0+4]=grid[r0+4].map((_,i)=>i%2?c1:c2);grid[r0+5].fill(c2);grid[r0+6].fill(c2)}
+  let r=BAND+3;scStamp(grid,top,r,1,c2,{});r+=7+3;
+  lines.forEach((l,i)=>{scStamp(grid,l,r,2,c2,nameOpt);r+=14+(i<lines.length-1?3:0)});r+=3;
+  scStamp(grid,sub,r,1,c2,{});
+  // canvas
+  g.setTransform(1,0,0,1,0,0);g.fillStyle="#EEF1EC";g.fillRect(0,0,W,H);
+  const sw=COLS*S,sh=ROWS*S,block=sh+60+170,cy=Math.round((1230-block)/2+sh/2);
+  g.save();g.translate(W/2,cy);g.rotate(-0.045);
+  g.shadowColor="rgba(24,32,27,.28)";g.shadowBlur=36;g.shadowOffsetY=18;g.fillStyle=c1;g.fillRect(-sw/2,-sh/2,sw,sh);g.shadowColor="transparent";
+  const x0=-sw/2,y0=-sh/2;g.lineCap="round";
+  for(let rr=0;rr<ROWS;rr++)for(let q=0;q<COLS;q++){const col=grid[rr][q],x=x0+q*S,y=y0+rr*S;g.fillStyle=scShade(col,-0.32);g.fillRect(x,y,S,S);
+    g.strokeStyle=col;g.lineWidth=S*0.46;g.beginPath();g.moveTo(x+S*0.2,y+S*0.1);g.lineTo(x+S*0.5,y+S*0.92);g.moveTo(x+S*0.8,y+S*0.1);g.lineTo(x+S*0.5,y+S*0.92);g.stroke();
+    g.strokeStyle=scShade(col,0.24);g.lineWidth=S*0.12;g.beginPath();g.moveTo(x+S*0.24,y+S*0.18);g.lineTo(x+S*0.44,y+S*0.7);g.stroke()}
+  let seed=11;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
+  [-1,1].forEach(side=>{const ex=side<0?x0:-x0;for(let rr=1;rr<ROWS;rr+=3){const col=(Math.floor(rr/9)%2)?c1:c2,L=58+rnd()*26,yy=y0+rr*S+S/2;
+    for(let s2=-1;s2<=1;s2++){g.strokeStyle=s2?col:scShade(col,-0.2);g.lineWidth=3.5;g.beginPath();g.moveTo(ex,yy+s2*3);
+      g.bezierCurveTo(ex+side*L*0.35,yy+s2*3+rnd()*6-3,ex+side*L*0.7,yy+s2*4+rnd()*8-4,ex+side*L,yy+s2*5+rnd()*10-5);g.stroke()}}});
+  g.restore();
+  const ty=cy+sh/2+150,head=o.pos===1?T("scarfWin"):T("scarfPos",{p:ordinal(o.pos)});
+  g.textAlign="center";g.fillStyle="#18201B";let fs=86;do{g.font='700 '+fs+'px "Barlow Condensed","Arial Narrow",Arial,sans-serif';fs-=4}while(g.measureText(head).width>940&&fs>40);
+  g.fillText(head,W/2,ty);
+  g.fillStyle="#5B675F";g.font='500 34px "IBM Plex Sans",Arial,sans-serif';g.fillText(o.race+(o.gap?" · +"+o.gap:""),W/2,ty+62);
+  g.fillStyle="#9AA59D";g.font='800 22px "Barlow Condensed","Arial Narrow",Arial,sans-serif';try{g.letterSpacing="7px"}catch(e){}
+  g.fillText("STUDIO BELLO",W/2+3,1300);try{g.letterSpacing="0px"}catch(e){}}
+function scBlob(cb){$("scCv").toBlob(cb,"image/png")}
+const scSlug=()=>{const o=scarfOptions()[Number($("scRider").value)||0];return "sjaal-"+scClean(o?o.name:"renner").toLowerCase().replace(/[^a-z0-9]+/g,"-")+".png"};
+$("scRider").onchange=()=>{const o=scarfOptions()[Number($("scRider").value)||0];$("scRider").dataset.key=o?o.key:"";drawScarf()};
+$("scTop").oninput=()=>drawScarf();
+const scColorIn=()=>{scCustom=[$("scC1").value,$("scC2").value];renderScarfControls();drawScarf()};$("scC1").oninput=scColorIn;$("scC2").oninput=scColorIn;
+$("scSave").onclick=()=>scBlob(b=>{if(!b)return;const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=scSlug();document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);$("scStatus").textContent=T("scarfSaved");track("sjaal-bewaard")});
+try{if(navigator.canShare&&navigator.canShare({files:[new File([""],"x.png",{type:"image/png"})]}))$("scShare").hidden=false}catch(e){}
+$("scShare").onclick=()=>scBlob(b=>{if(!b)return;const f=new File([b],scSlug(),{type:"image/png"});navigator.share({files:[f]}).then(()=>track("sjaal-gedeeld")).catch(()=>{})});
+$("scarfFor").onclick=()=>{if(follow===null)return;fillScarfRiders(race.riders[follow].name+"|"+race.title);location.hash="#sjaal"};
 
 /* ================= YOU VS THE PRO ================= */
 const duel={you:null,climb:null,playing:false,start:0,proIdx:0};
@@ -734,10 +933,10 @@ $("dataCopy").onclick=()=>copyText($("dataIn").value,$("dataIn"),$("dataStatus")
 $("dataReset").onclick=()=>{loadFile().then(()=>{$("dataStatus").textContent=T("fileReloaded");location.hash="#replay"})};
 
 /* ================= ROUTING + BOOT ================= */
-function route(){const v=(location.hash||"#replay").slice(1),views=["replay","duel","logger","data"],cur=views.includes(v)?v:"replay";
+function route(){const v=(location.hash||"#replay").slice(1),views=["replay","duel","sjaal","logger","data"],cur=views.includes(v)?v:"replay";
   views.forEach(n=>{$("view-"+n).hidden=n!==cur;const a=$("tab-"+n);if(n===cur)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   if(cur!=="replay"){document.body.classList.remove("clip");track("tab-"+cur)}
-  if(cur==="replay"){lastOrder="";requestAnimationFrame(resize)}if(cur==="duel")requestAnimationFrame(()=>drawDuel(null))}
+  if(cur==="replay"){lastOrder="";requestAnimationFrame(resize)}if(cur==="duel")requestAnimationFrame(()=>drawDuel(null));if(cur==="sjaal"){fillScarfRiders();drawScarf();loadScarfFonts().then(drawScarf)}}
 window.addEventListener("hashchange",route);
 async function loadFile(){try{const r=await fetch("race.json",{cache:"no-store"});if(!r.ok)throw new Error(r.status);setRaces(await r.json())}catch(e){setRaces(DEMO_FILE)}}
 setRaces(DEMO_FILE);applyLang();route();resize();requestAnimationFrame(frame);loadFile();
