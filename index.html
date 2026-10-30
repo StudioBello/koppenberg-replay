@@ -858,8 +858,8 @@ function drawScarf(){const cv2=$("scCv");if(!cv2||$("view-sjaal").hidden)return;
   const big=ordinal(o.pos);fit(big,'italic 800 {s}px '+FAM,250,900);g.fillStyle=numCol;g.fillText(big,W/2,y);
   y+=30+80;const l2=o.pos===1?T("scarfWin2"):T("scarfPos2");fit(l2,'800 {s}px '+FAM,76,940);g.fillStyle=ink;g.fillText(l2,W/2,y);
   y+=20+50;const l3=o.race+(o.gap?" · +"+o.gap:"");fit(l3,'500 {s}px '+FAM,36,940);g.fillStyle="#5B675F";g.fillText(l3,W/2,y);
-  g.fillStyle="#9AA59D";g.font='600 24px '+FAM;try{g.letterSpacing="8px"}catch(e){}
-  g.fillText("STUDIO BELLO",W/2+4,1650);try{g.letterSpacing="0px"}catch(e){}}
+  g.fillStyle="#B3BCB5";g.font='600 17px '+FAM;try{g.letterSpacing="6px"}catch(e){}
+  g.fillText("STUDIO BELLO",W/2+3,1855);try{g.letterSpacing="0px"}catch(e){}}
 function scBlob(cb){$("scCv").toBlob(cb,"image/png")}
 const scSlug=()=>{const o=scarfOptions()[Number($("scRider").value)||0];return "sjaal-"+scClean(o?o.name:"renner").toLowerCase().replace(/[^a-z0-9]+/g,"-")+".png"};
 $("scRider").onchange=()=>{const o=scarfOptions()[Number($("scRider").value)||0];$("scRider").dataset.key=o?o.key:"";drawScarf()};
