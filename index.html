@@ -6,7 +6,7 @@
 <title>Koppenberg Replay</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Tomorrow:ital,wght@0,500;0,600;0,800;1,800&display=swap">
 <meta name="description" content="Volg elke renner van de Koppenbergcross, niet alleen de leider. Een gratis replay op het echte parcours, voor de fans van élke crosser. Een project van Studio Bello.">
 <meta property="og:title" content="Koppenberg Replay">
 <meta property="og:description" content="Ook nummer 14 heeft supporters. Volg élke renner van de Koppenbergcross, renner per renner, op het echte parcours.">
@@ -189,7 +189,7 @@ body.clip .cliptools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
 .fontpick button{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:20px;line-height:1.1}
 .fontpick button[aria-pressed="true"]{border-color:var(--ink);background:var(--panel);outline:2px solid var(--ink);outline-offset:1px}
 input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:2px;cursor:pointer}
-.scarfwrap canvas{width:100%;height:auto;border-radius:8px;display:block}
+.scarfwrap canvas{width:auto;max-width:100%;max-height:78vh;height:auto;border-radius:8px;display:block;margin:0 auto}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -298,7 +298,7 @@ input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-rad
         </div>
         <p style="font-size:12px" data-i18n="scarfPrivacy"></p>
       </div>
-      <div class="card"><div class="scarfwrap" style="margin-top:12px"><canvas id="scCv" width="1080" height="1350" aria-label="Supporterssjaal"></canvas></div></div>
+      <div class="card"><div class="scarfwrap" style="margin-top:12px"><canvas id="scCv" width="1080" height="1920" aria-label="Supporterssjaal"></canvas></div></div>
     </div>
   </section>
 
@@ -455,12 +455,12 @@ Object.assign(STR.nl,{tabScarf:"Sjaal",spot:"Jouw plek",spNone:"Kies je plek",sp
  spotTitle:"Aan jouw plek",spNext:"Volgende: {n} over {t}",spDone:"Iedereen is voorbij",spWait:"Nog niemand voorbij. Druk op Afspelen.",spFront:"vooraan",spotHint:"Tip: kies je plek langs het parcours, of klik erop. Je ziet de koers dan passeren zoals langs de dranghekken, met de radio tegen je oor.",
  hint:"Sleep om te draaien · klik om je plek te kiezen · donker = kasseien · parcours naar de kaart van de organisator, hoogtes benaderd",
  scarfTitle:"Supporterssjaal",scarfIntro:"Elke renner verdient een fanclub. Kies je renner, je kleuren en je letter, en we breien een sjaal die je kunt bewaren en delen.",scarfRider:"Renner",scarfColors:"Kleuren",scarfOwn1:"Eigen kleur 1",scarfOwn2:"Eigen kleur 2",scarfFont:"Letter",scarfTopLine:"Bovenste regel (bijvoorbeeld de naam van je fanclub)",scarfTopDefault:"SUPPORTERSCLUB",
- scarfSave:"Bewaar als afbeelding",scarfShare:"Deel",scarfSaved:"Bewaard. Veel plezier ermee!",scarfPrivacy:"De sjaal wordt op je eigen toestel gemaakt. Niets wordt verstuurd of opgeslagen.",scarfWin:"Winnaar op de Koppenberg",scarfPos:"{p} op de Koppenberg",scarfFor:"Sjaal voor {n}",fontBlock:"BLOK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
+ scarfSave:"Bewaar als afbeelding",scarfShare:"Deel",scarfSaved:"Bewaard. Veel plezier ermee!",scarfPrivacy:"De sjaal wordt op je eigen toestel gemaakt. Niets wordt verstuurd of opgeslagen.",scarfWin:"Winnaar op de Koppenberg",scarfPos:"{p} op de Koppenberg",scarfWin2:"winnaar op de Koppenberg",scarfPos2:"op de Koppenberg",scarfFor:"Sjaal voor {n}",fontBlock:"BLOK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
 Object.assign(STR.en,{tabScarf:"Scarf",spot:"Your spot",spNone:"Pick your spot",spFinish:"Finish on top",spCobbles:"Koppenberg cobbles",spPit:"Pit",spZig:"Zigzags",spDescent:"Fast descent",spCustom:"Your own spot",camSpot:"From your spot",
  spotTitle:"At your spot",spNext:"Next: {n} in {t}",spDone:"Everyone has passed",spWait:"Nobody has passed yet. Press Play.",spFront:"in front",spotHint:"Tip: pick your spot along the course, or click on it. You see the race pass like you do from behind the barriers, radio to your ear.",
  hint:"Drag to rotate · click to pick your spot · dark = cobbles · course from the organiser's map, heights approximate",
  scarfTitle:"Supporter scarf",scarfIntro:"Every rider deserves a fan club. Pick your rider, your colours and your lettering, and we'll knit a scarf you can save and share.",scarfRider:"Rider",scarfColors:"Colours",scarfOwn1:"Own colour 1",scarfOwn2:"Own colour 2",scarfFont:"Lettering",scarfTopLine:"Top line (your fan club's name, for example)",scarfTopDefault:"SUPPORTERS CLUB",
- scarfSave:"Save as image",scarfShare:"Share",scarfSaved:"Saved. Enjoy!",scarfPrivacy:"The scarf is made on your own device. Nothing is sent or stored.",scarfWin:"Winner on the Koppenberg",scarfPos:"{p} on the Koppenberg",scarfFor:"Scarf for {n}",fontBlock:"BLOCK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
+ scarfSave:"Save as image",scarfShare:"Share",scarfSaved:"Saved. Enjoy!",scarfPrivacy:"The scarf is made on your own device. Nothing is sent or stored.",scarfWin:"Winner on the Koppenberg",scarfPos:"{p} on the Koppenberg",scarfWin2:"winner on the Koppenberg",scarfPos2:"on the Koppenberg",scarfFor:"Scarf for {n}",fontBlock:"BLOCK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
 const ordinal=p=>lang==="nl"?p+"e":p+(p%100>=11&&p%100<=13?"th":({1:"st",2:"nd",3:"rd"}[p%10]||"th"));
 let lang=store.get("kr-lang")||"nl";
 const T=(k,v={})=>{let s=(STR[lang][k]??STR.en[k]??k);return typeof s==="string"?s.replace(/\{(\w+)\}/g,(_,x)=>v[x]??""):s};
@@ -801,9 +801,9 @@ const scRGB=hex=>{const n=parseInt(hex.slice(1),16);return [n>>16,n>>8&255,n&255
 const scShade=(hex,a)=>{let [r,g,b]=scRGB(hex);const t=a<0?0:255,f=Math.abs(a);r=Math.round(r+(t-r)*f);g=Math.round(g+(t-g)*f);b=Math.round(b+(t-b)*f);return "#"+[r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("")};
 const scLum=hex=>{const [r,g,b]=scRGB(hex);return (0.299*r+0.587*g+0.114*b)/255};
 let scFontsReady=null;
-function loadScarfFonts(){if(!scFontsReady)scFontsReady=Promise.all(['700 60px "Barlow Condensed"','800 20px "Barlow Condensed"','500 30px "IBM Plex Sans"'].map(f=>document.fonts.load(f).catch(()=>{})));return scFontsReady}
+function loadScarfFonts(){if(!scFontsReady)scFontsReady=Promise.all(['italic 800 200px "Tomorrow"','800 60px "Tomorrow"','500 36px "Tomorrow"','600 24px "Tomorrow"'].map(f=>document.fonts.load(f).catch(()=>{})));return scFontsReady}
 function drawScarf(){const cv2=$("scCv");if(!cv2||$("view-sjaal").hidden)return;const o=scarfOptions()[Number($("scRider").value)||0];if(!o)return;
-  const g=cv2.getContext("2d"),W=1080,H=1350,[c1,c2]=scCustom||SC_PAL[scPal];
+  const g=cv2.getContext("2d"),W=1080,H=1920,[c1,c2]=scCustom||SC_PAL[scPal];
   const st={sx:2,italic:scStyle==="retro",shadow:scStyle==="college"?scShade(c2,scLum(c2)>0.5?-0.45:0.45):null};
   const COLS=112,S=8;
   // lay out the lines
@@ -822,7 +822,8 @@ function drawScarf(){const cv2=$("scCv");if(!cv2||$("view-sjaal").hidden)return;
   scStamp(grid,sub,r,1,c2,{});
   // canvas
   g.setTransform(1,0,0,1,0,0);g.fillStyle="#EEF1EC";g.fillRect(0,0,W,H);
-  const sw=COLS*S,sh=ROWS*S,block=sh+60+170,cy=Math.round((1230-block)/2+sh/2);
+  const sw=COLS*S,sh=ROWS*S,FAM='"Tomorrow","Barlow Condensed","Arial Narrow",Arial,sans-serif';
+  const block=sh+70+250+30+80+20+50,top0=260+Math.max(0,(1340-block)/2),cy=Math.round(top0+sh/2);
   g.save();g.translate(W/2,cy);g.rotate(-0.045);
   g.shadowColor="rgba(24,32,27,.28)";g.shadowBlur=36;g.shadowOffsetY=18;g.fillStyle=c1;g.fillRect(-sw/2,-sh/2,sw,sh);g.shadowColor="transparent";
   const x0=-sw/2,y0=-sh/2;g.lineCap="round";
@@ -834,12 +835,15 @@ function drawScarf(){const cv2=$("scCv");if(!cv2||$("view-sjaal").hidden)return;
     for(let s2=-1;s2<=1;s2++){g.strokeStyle=s2?col:scShade(col,-0.2);g.lineWidth=3.5;g.beginPath();g.moveTo(ex,yy+s2*3);
       g.bezierCurveTo(ex+side*L*0.35,yy+s2*3+rnd()*6-3,ex+side*L*0.7,yy+s2*4+rnd()*8-4,ex+side*L,yy+s2*5+rnd()*10-5);g.stroke()}}});
   g.restore();
-  const ty=cy+sh/2+150,head=o.pos===1?T("scarfWin"):T("scarfPos",{p:ordinal(o.pos)});
-  g.textAlign="center";g.fillStyle="#18201B";let fs=86;do{g.font='700 '+fs+'px "Barlow Condensed","Arial Narrow",Arial,sans-serif';fs-=4}while(g.measureText(head).width>940&&fs>40);
-  g.fillText(head,W/2,ty);
-  g.fillStyle="#5B675F";g.font='500 34px "IBM Plex Sans",Arial,sans-serif';g.fillText(o.race+(o.gap?" · +"+o.gap:""),W/2,ty+62);
-  g.fillStyle="#9AA59D";g.font='800 22px "Barlow Condensed","Arial Narrow",Arial,sans-serif';try{g.letterSpacing="7px"}catch(e){}
-  g.fillText("STUDIO BELLO",W/2+3,1300);try{g.letterSpacing="0px"}catch(e){}}
+  // big place number, sporty slanted, in the scarf's colour when it reads on the light ground
+  const ink="#18201B",numCol=scLum(c1)<0.72?c1:(scLum(c2)<0.72?c2:ink);
+  let y=cy+sh/2+70+250;g.textAlign="center";
+  const fit=(txt,spec,size,maxW)=>{let fs=size;do{g.font=spec.replace("{s}",fs);fs-=4}while(g.measureText(txt).width>maxW&&fs>24)};
+  const big=ordinal(o.pos);fit(big,'italic 800 {s}px '+FAM,250,900);g.fillStyle=numCol;g.fillText(big,W/2,y);
+  y+=30+80;const l2=o.pos===1?T("scarfWin2"):T("scarfPos2");fit(l2,'800 {s}px '+FAM,76,940);g.fillStyle=ink;g.fillText(l2,W/2,y);
+  y+=20+50;const l3=o.race+(o.gap?" · +"+o.gap:"");fit(l3,'500 {s}px '+FAM,36,940);g.fillStyle="#5B675F";g.fillText(l3,W/2,y);
+  g.fillStyle="#9AA59D";g.font='600 24px '+FAM;try{g.letterSpacing="8px"}catch(e){}
+  g.fillText("STUDIO BELLO",W/2+4,1650);try{g.letterSpacing="0px"}catch(e){}}
 function scBlob(cb){$("scCv").toBlob(cb,"image/png")}
 const scSlug=()=>{const o=scarfOptions()[Number($("scRider").value)||0];return "sjaal-"+scClean(o?o.name:"renner").toLowerCase().replace(/[^a-z0-9]+/g,"-")+".png"};
 $("scRider").onchange=()=>{const o=scarfOptions()[Number($("scRider").value)||0];$("scRider").dataset.key=o?o.key:"";drawScarf()};
