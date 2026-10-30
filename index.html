@@ -802,7 +802,7 @@ const scShade=(hex,a)=>{let [r,g,b]=scRGB(hex);const t=a<0?0:255,f=Math.abs(a);r
 const scLum=hex=>{const [r,g,b]=scRGB(hex);return (0.299*r+0.587*g+0.114*b)/255};
 let scFontsReady=null;
 function loadScarfFonts(){if(!scFontsReady)scFontsReady=Promise.all(['italic 800 200px "Tomorrow"','800 60px "Tomorrow"','500 36px "Tomorrow"','600 24px "Tomorrow"'].map(f=>document.fonts.load(f).catch(()=>{})));return scFontsReady}
-// Quiet cobble relief: tone on tone, strongest at the bottom, fading out towards the top.
+// Quiet cobble relief over the whole background: tone on tone, a little stronger towards the bottom.
 let scCobCache=null;
 function scCobbles(W,H){if(scCobCache)return scCobCache;const c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
   let seed=29;const rnd=()=>{seed=(seed*9301+49297)%233280;return seed/233280};
@@ -816,7 +816,7 @@ function scCobbles(W,H){if(scCobCache)return scCobCache;const c=document.createE
       x.restore();px+=w+GAP}
     y-=RH;row++}
   x.globalCompositeOperation="destination-in";const gr=x.createLinearGradient(0,0,0,H);
-  gr.addColorStop(0,"rgba(0,0,0,0)");gr.addColorStop(0.42,"rgba(0,0,0,0.12)");gr.addColorStop(0.78,"rgba(0,0,0,0.75)");gr.addColorStop(1,"rgba(0,0,0,1)");
+  gr.addColorStop(0,"rgba(0,0,0,0.6)");gr.addColorStop(0.5,"rgba(0,0,0,0.75)");gr.addColorStop(1,"rgba(0,0,0,1)");
   x.fillStyle=gr;x.fillRect(0,0,W,H);return scCobCache=c}
 function drawScarf(){const cv2=$("scCv");if(!cv2||$("view-sjaal").hidden)return;const o=scarfOptions()[Number($("scRider").value)||0];if(!o)return;
   const g=cv2.getContext("2d"),W=1080,H=1920,[c1,c2]=scCustom||SC_PAL[scPal];
