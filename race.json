@@ -132,6 +132,14 @@
     {
      "label": "Verslag (In de Leiderstrui)",
      "url": "https://www.indeleiderstrui.nl/veldrijden/twee-valpartijen-thibau-nys-leiden-tot-ongekend-kunststukje-in-koppenbergcross"
+    },
+    {
+     "label": "Uitslag top 10 (EsCiclismo)",
+     "url": "https://www.esciclismo.com/actualidad/carretera/93722.html"
+    },
+    {
+     "label": "Verslag (Escape Collective)",
+     "url": "https://escapecollective.com/harder-than-hard-brand-and-nys-take-team-sweep-at-koppenbergcross/"
     }
    ],
    "result": [
@@ -202,10 +210,16 @@
      "note": "Sporza 15:48: Nys komt door op 12 s"
     },
     {
+     "afterLap": 5,
+     "name": "Gerben Kuypers",
+     "gap": 0,
+     "note": "EsCiclismo: na ronde 5 Nys en Kuypers samen op 9 s van Vanthourenhout"
+    },
+    {
      "afterLap": 7,
      "name": "Michael Vanthourenhout",
      "gap": 0,
-     "note": "Nys haalt Vanthourenhout bij voor de laatste ronde (CyclingUpToDate, In de Leiderstrui)"
+     "note": "Nys haalt Vanthourenhout bij op de voorlaatste beklimming van de Koppenberg (Escape Collective, CyclingUpToDate, In de Leiderstrui)"
     },
     {
      "afterLap": 7,
