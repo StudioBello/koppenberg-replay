@@ -1,6 +1,220 @@
 {
- "updated": "2026-10-29",
+ "updated": "2026-11-01",
  "races": [
+  {
+   "id": "women-2026",
+   "title": "Koppenbergcross 2026 · Elite vrouwen",
+   "laps": 6,
+   "sources": [
+    {
+     "label": "Officiële uitslag (Koppenbergcross)",
+     "url": "https://koppenbergcross.be/uitslagen-elite-vrouwen/"
+    },
+    {
+     "label": "Sporza liveverslag",
+     "url": "https://sporza.be/nl/matches/veldrijden/x-o-trofee-vrouwen/2026/koppenbergcross-livestream-marie-schreiber-dunt-de-kopgroep-uit-in-de-koppenbergcross-casasola-en-brand-volgen~1789393800504/"
+    }
+   ],
+   "result": [
+    {
+     "name": "Lucinda Brand",
+     "time": "53:29"
+    },
+    {
+     "name": "Sara Casasola",
+     "gap": "0:53"
+    },
+    {
+     "name": "Marie Schreiber",
+     "gap": "1:22"
+    },
+    {
+     "name": "Hélène Clauzel",
+     "gap": "1:44"
+    },
+    {
+     "name": "Amandine Fouquenet",
+     "gap": "2:02"
+    },
+    {
+     "name": "Denise Betsema",
+     "gap": "2:06"
+    },
+    {
+     "name": "Ceylin Alvarado",
+     "gap": "2:18"
+    },
+    {
+     "name": "Fem van Empel",
+     "gap": "2:43"
+    },
+    {
+     "name": "Kristýna Zemanová",
+     "gap": "3:21"
+    },
+    {
+     "name": "Inge van der Heijden",
+     "gap": "3:27"
+    },
+    {
+     "name": "Lison Desprez",
+     "gap": "3:32"
+    },
+    {
+     "name": "Alicia Franck",
+     "gap": "3:37"
+    },
+    {
+     "name": "Mae Cabaca",
+     "gap": "4:03"
+    },
+    {
+     "name": "Rebecca Gariboldi",
+     "gap": "4:20"
+    },
+    {
+     "name": "Amandine Muller",
+     "gap": "4:43"
+    }
+   ],
+   "anchors": [
+    {
+     "afterLap": 3,
+     "name": "Sara Casasola",
+     "gap": 0,
+     "note": "Sporza 14:12, halfweg: Schreiber, Brand en Casasola samen"
+    },
+    {
+     "afterLap": 3,
+     "name": "Marie Schreiber",
+     "gap": 0,
+     "note": "Sporza 14:12, halfweg: Schreiber, Brand en Casasola samen"
+    },
+    {
+     "afterLap": 3,
+     "name": "Hélène Clauzel",
+     "gap": 13,
+     "note": "Sporza 14:13: Clauzel vierde op 13 s"
+    },
+    {
+     "afterLap": 3,
+     "name": "Ceylin Alvarado",
+     "gap": 40,
+     "note": "Sporza 14:14: Alvarado vijfde op 40 s"
+    },
+    {
+     "afterLap": 3,
+     "name": "Fem van Empel",
+     "gap": 51,
+     "note": "Sporza 14:14: Van Empel zesde op 51 s"
+    },
+    {
+     "afterLap": 4,
+     "name": "Sara Casasola",
+     "gap": 11,
+     "note": "Sporza 14:22: Brand boven op de Koppenberg 11 s voor Casasola"
+    }
+   ]
+  },
+  {
+   "id": "men-2026",
+   "title": "Koppenbergcross 2026 · Elite mannen",
+   "laps": 8,
+   "sources": [
+    {
+     "label": "Sporza liveverslag en uitslag",
+     "url": "https://sporza.be/nl/matches/veldrijden/x-o-trofee/2026/koppenbergcross-livestream-een-nieuwe-schuiver-thibau-nys-gaat-opnieuw-onderuit-maar-maakt-nog-steeds-aanspraak-op-de-zege~1789392840622/"
+    },
+    {
+     "label": "Verslag (CyclingUpToDate)",
+     "url": "https://cyclinguptodate.com/cyclocross/results-koppenbergcross-2026-thibau-nys-crashes-twice-but-wins-dramatic-season-debut-as-lucinda-brand-dominates"
+    },
+    {
+     "label": "Verslag (In de Leiderstrui)",
+     "url": "https://www.indeleiderstrui.nl/veldrijden/twee-valpartijen-thibau-nys-leiden-tot-ongekend-kunststukje-in-koppenbergcross"
+    }
+   ],
+   "result": [
+    {
+     "name": "Thibau Nys",
+     "time": "1:01:31"
+    },
+    {
+     "name": "Michael Vanthourenhout",
+     "gap": "0:07"
+    },
+    {
+     "name": "Gerben Kuypers",
+     "gap": "0:42"
+    },
+    {
+     "name": "Pim Ronhaar",
+     "gap": "0:57"
+    },
+    {
+     "name": "Cameron Mason",
+     "gap": "1:01"
+    },
+    {
+     "name": "Jarno Bellens",
+     "gap": "1:13"
+    },
+    {
+     "name": "Arne Baers",
+     "gap": "1:23"
+    },
+    {
+     "name": "Romain Debord",
+     "gap": "1:43"
+    },
+    {
+     "name": "Thomas Mein",
+     "gap": "1:52"
+    },
+    {
+     "name": "Jente Michels",
+     "gap": "1:55"
+    }
+   ],
+   "anchors": [
+    {
+     "afterLap": 3,
+     "name": "Michael Vanthourenhout",
+     "gap": -25,
+     "note": "Sporza 15:25: Nys komt door op 25 s van leider Vanthourenhout (gap t.o.v. winnaar Nys)"
+    },
+    {
+     "afterLap": 4,
+     "name": "Michael Vanthourenhout",
+     "gap": -17,
+     "note": "Sporza 15:33: Nys op 17 s aan de finish, nog vier ronden"
+    },
+    {
+     "afterLap": 5,
+     "name": "Michael Vanthourenhout",
+     "gap": -9,
+     "note": "Sporza 15:40: Nys op 9 s van Vanthourenhout op de streep"
+    },
+    {
+     "afterLap": 6,
+     "name": "Michael Vanthourenhout",
+     "gap": -12,
+     "note": "Sporza 15:48: Nys komt door op 12 s"
+    },
+    {
+     "afterLap": 7,
+     "name": "Michael Vanthourenhout",
+     "gap": 0,
+     "note": "Nys haalt Vanthourenhout bij voor de laatste ronde (CyclingUpToDate, In de Leiderstrui)"
+    },
+    {
+     "afterLap": 7,
+     "name": "Gerben Kuypers",
+     "gap": 25,
+     "note": "Sporza 15:56: Kuypers komt door op 25 s"
+    }
+   ]
+  },
   {
    "id": "women-2025",
    "title": "Koppenbergcross 2025 · Elite vrouwen",
