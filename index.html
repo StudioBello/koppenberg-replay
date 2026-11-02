@@ -199,7 +199,9 @@ body.clip .cliptools{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
 .fontpick button{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:6px 14px;font-size:20px;line-height:1.1}
 .fontpick button[aria-pressed="true"]{border-color:var(--ink);background:var(--panel);outline:2px solid var(--ink);outline-offset:1px}
 input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-radius:6px;background:var(--bg);padding:2px;cursor:pointer}
-.scarfwrap canvas{width:auto;max-width:100%;max-height:78vh;height:auto;border-radius:8px;display:block;margin:0 auto}
+.scarfwrap canvas,.scarfwrap img{width:auto;max-width:100%;max-height:78vh;height:auto;border-radius:8px;display:block;margin:0 auto;-webkit-touch-callout:default}
+.scarfcta{display:inline-flex;align-items:center;gap:6px;text-decoration:none;margin-bottom:12px}
+.schold{text-align:center;margin:8px 0 0}
 [hidden]{display:none!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -229,6 +231,7 @@ input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-rad
   <!-- REPLAY -->
   <section id="view-replay">
     <div class="races" id="raceSel" style="margin-bottom:10px"></div>
+    <a class="btn tape scarfcta" id="scarfCta" href="#sjaal" data-i18n="scarfCta"></a>
     <div class="notice" id="note" style="margin-bottom:14px">
       <span class="tag" id="noteTag"></span><span id="noteText"></span><span class="src" id="noteSrc"></span>
     </div>
@@ -292,6 +295,7 @@ input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-rad
         <h2 data-i18n="scarfTitle"></h2>
         <p data-i18n="scarfIntro"></p>
         <div class="fields">
+          <label for="scSearch"><span data-i18n="scarfSearch"></span><input type="search" id="scSearch" autocomplete="off" enterkeyhint="search"></label>
           <label for="scRider"><span data-i18n="scarfRider"></span><select id="scRider"></select></label>
           <div><div class="lbl" data-i18n="scarfColors"></div><div class="swatches" id="scSw"></div></div>
           <div class="inline">
@@ -308,7 +312,7 @@ input[type=color]{width:100%;height:38px;border:1px solid var(--line);border-rad
         </div>
         <p style="font-size:12px" data-i18n="scarfPrivacy"></p>
       </div>
-      <div class="card"><div class="scarfwrap" style="margin-top:12px"><canvas id="scCv" width="1080" height="1920" aria-label="Supporterssjaal"></canvas></div></div>
+      <div class="card"><div class="scarfwrap" style="margin-top:12px"><canvas id="scCv" width="1080" height="1920" hidden></canvas><img id="scImg" alt="Supporterssjaal"></div><p class="lbl schold" id="scHold" data-i18n="scarfHold" hidden></p></div>
     </div>
   </section>
 
@@ -465,12 +469,12 @@ Object.assign(STR.nl,{tabScarf:"Sjaal",spot:"Jouw plek",spNone:"Kies je plek",sp
  spotTitle:"Aan jouw plek",spNext:"Volgende: {n} over {t}",spDone:"Iedereen is voorbij",spWait:"Nog niemand voorbij. Druk op Afspelen.",spFront:"vooraan",spotHint:"Tip: kies je plek langs het parcours, of klik erop. Je ziet de koers dan passeren zoals langs de dranghekken, met de radio tegen je oor.",
  hint:"Sleep om te draaien · klik om je plek te kiezen · donker = kasseien · parcours naar de kaart van de organisator, hoogtes benaderd",
  scarfTitle:"Supporterssjaal",scarfIntro:"Elke renner verdient een fanclub. Kies je renner, je kleuren en je letter, en we breien een sjaal die je kunt bewaren en delen.",scarfRider:"Renner",scarfColors:"Kleuren",scarfOwn1:"Eigen kleur 1",scarfOwn2:"Eigen kleur 2",scarfFont:"Letter",scarfTopLine:"Bovenste regel (bijvoorbeeld de naam van je fanclub)",scarfTopDefault:"SUPPORTERSCLUB",
- scarfSave:"Bewaar als afbeelding",scarfShare:"Deel",scarfSaved:"Bewaard. Veel plezier ermee!",scarfPrivacy:"De sjaal wordt op je eigen toestel gemaakt. Niets wordt verstuurd of opgeslagen.",scarfWin:"Winnaar op de Koppenberg",scarfPos:"{p} op de Koppenberg",scarfWin2:"winnaar op de Koppenberg",scarfPos2:"op de Koppenberg",scarfFor:"Sjaal voor {n}",fontBlock:"BLOK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
+ scarfSave:"Bewaar als afbeelding",scarfShare:"Deel",scarfSaved:"Bewaard. Veel plezier ermee!",scarfPrivacy:"De sjaal wordt op je eigen toestel gemaakt. Niets wordt verstuurd of opgeslagen.",scarfWin:"Winnaar op de Koppenberg",scarfPos:"{p} op de Koppenberg",scarfWin2:"winnaar op de Koppenberg",scarfPos2:"op de Koppenberg",scarfFor:"Sjaal voor {n}",scarfCta:"🧣 Brei een sjaal voor je renner",scarfSearch:"Zoek je renner",scarfSearchPh:"Typ een naam, bv. Vandebosch",scarfNoMatch:"Geen renner gevonden",scarfHold:"Op je gsm? Houd de sjaal ingedrukt en kies ‘Afbeelding bewaren’ of ‘Bewaar in Foto’s’.",scarfInapp:"In deze app werkt downloaden niet. Houd de sjaal ingedrukt en kies ‘Afbeelding bewaren’, of open de site in Safari of Chrome.",fontBlock:"BLOK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
 Object.assign(STR.en,{tabScarf:"Scarf",spot:"Your spot",spNone:"Pick your spot",spFinish:"Finish on top",spCobbles:"Koppenberg cobbles",spPit:"Pit",spZig:"Zigzags",spDescent:"Fast descent",spCustom:"Your own spot",camSpot:"From your spot",
  spotTitle:"At your spot",spNext:"Next: {n} in {t}",spDone:"Everyone has passed",spWait:"Nobody has passed yet. Press Play.",spFront:"in front",spotHint:"Tip: pick your spot along the course, or click on it. You see the race pass like you do from behind the barriers, radio to your ear.",
  hint:"Drag to rotate · click to pick your spot · dark = cobbles · course from the organiser's map, heights approximate",
  scarfTitle:"Supporter scarf",scarfIntro:"Every rider deserves a fan club. Pick your rider, your colours and your lettering, and we'll knit a scarf you can save and share.",scarfRider:"Rider",scarfColors:"Colours",scarfOwn1:"Own colour 1",scarfOwn2:"Own colour 2",scarfFont:"Lettering",scarfTopLine:"Top line (your fan club's name, for example)",scarfTopDefault:"SUPPORTERS CLUB",
- scarfSave:"Save as image",scarfShare:"Share",scarfSaved:"Saved. Enjoy!",scarfPrivacy:"The scarf is made on your own device. Nothing is sent or stored.",scarfWin:"Winner on the Koppenberg",scarfPos:"{p} on the Koppenberg",scarfWin2:"winner on the Koppenberg",scarfPos2:"on the Koppenberg",scarfFor:"Scarf for {n}",fontBlock:"BLOCK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
+ scarfSave:"Save as image",scarfShare:"Share",scarfSaved:"Saved. Enjoy!",scarfPrivacy:"The scarf is made on your own device. Nothing is sent or stored.",scarfWin:"Winner on the Koppenberg",scarfPos:"{p} on the Koppenberg",scarfWin2:"winner on the Koppenberg",scarfPos2:"on the Koppenberg",scarfFor:"Scarf for {n}",scarfCta:"🧣 Knit a scarf for your rider",scarfSearch:"Find your rider",scarfSearchPh:"Type a name, e.g. Vandebosch",scarfNoMatch:"No rider found",scarfHold:"On your phone? Press and hold the scarf and choose ‘Save image’ or ‘Add to Photos’.",scarfInapp:"Downloads don't work in this app. Press and hold the scarf and choose ‘Save image’, or open the site in Safari or Chrome.",fontBlock:"BLOCK",fontCollege:"COLLEGE",fontRetro:"RETRO"});
 const ordinal=p=>lang==="nl"?p+"e":p+(p%100>=11&&p%100<=13?"th":({1:"st",2:"nd",3:"rd"}[p%10]||"th"));
 let lang=store.get("kr-lang")||"nl";
 const T=(k,v={})=>{let s=(STR[lang][k]??STR.en[k]??k);return typeof s==="string"?s.replace(/\{(\w+)\}/g,(_,x)=>v[x]??""):s};
@@ -781,12 +785,17 @@ function scStamp(grid,text,row0,sy,color,o){const sx=o.sx||1,bm=scBitmap(text),h
   const x0=Math.floor((cols-w-(o.italic?3:0))/2),put=(r,c,col)=>{if(grid[r]&&c>=0&&c<cols)grid[r][c]=col};
   const each=fn=>{for(let r=0;r<h;r++){const src=bm[Math.floor(r/sy)],sh=o.italic?Math.floor((h-1-r)*3/h):0;src.forEach((v,c)=>{if(v)for(let k=0;k<sx;k++)fn(row0+r,x0+c*sx+k+sh)})}};
   if(o.shadow)each((r,c)=>put(r+1,c+1,o.shadow));each((r,c)=>put(r,c,color))}
+const scNorm=t=>String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+const SC_INAPP=/Instagram|FBAN|FBAV|FB_IAB|FBIOS|LinkedInApp|TikTok|musical_ly|Bytedance|Snapchat|Line\//i.test(navigator.userAgent||"");
+const SC_TOUCH=(()=>{try{return matchMedia("(pointer:coarse)").matches}catch(e){return false}})();
 function scarfOptions(){const out=[];races.forEach(R=>{const so=R.riders.slice().sort((a,b)=>a.end-b.end),w=so[0].end;
   so.forEach((r,k)=>{if(!r.finished)return;const res=(R.def.result||[]).find(x=>String(x.name).trim()===r.name);
     out.push({key:r.name+"|"+R.title,name:r.name,pos:k+1,gap:k===0?"":(res&&res.gap?String(res.gap).replace(/^\+/,""):fmt(r.end-w)),race:R.title,year:(R.title.match(/\b(19|20)\d\d\b/)||[""])[0]})})});return out}
 function fillScarfRiders(pref){const s=$("scRider");if(!s||!race)return;const o=scarfOptions(),cur=pref||s.dataset.key;s.innerHTML="";
-  o.forEach((x,i)=>{const op=document.createElement("option");op.value=i;op.textContent=x.name+" · "+ordinal(x.pos)+" · "+x.race;s.appendChild(op)});
+  const q=scNorm(($("scSearch")||{}).value||"");o.forEach((x,i)=>{if(q&&!scNorm(x.name).includes(q))return;const op=document.createElement("option");op.value=i;op.textContent=x.name+" · "+ordinal(x.pos)+" · "+x.race;s.appendChild(op)});
+  if(!s.options.length){const op=document.createElement("option");op.value="";op.disabled=true;op.textContent=T("scarfNoMatch");s.appendChild(op);return}
   let idx=o.findIndex(x=>x.key===cur);if(idx<0){const inR=o.filter(x=>x.race===race.title);idx=o.indexOf(inR[Math.floor(inR.length/2)]||o[0])}
+  if(![...s.options].some(op=>op.value==String(idx)))idx=Number(s.options[0].value);
   s.value=Math.max(0,idx);s.dataset.key=o[s.value]?o[s.value].key:""}
 function renderScarfControls(){const sw=$("scSw");sw.innerHTML="";SC_PAL.forEach((p,i)=>{const b=document.createElement("button");b.type="button";b.className="sw";
     b.style.background="linear-gradient(90deg,"+p[0]+" 0 50%,"+p[1]+" 50% 100%)";b.setAttribute("aria-label",p.join(" + "));b.setAttribute("aria-pressed",String(!scCustom&&i===scPal));
@@ -795,7 +804,7 @@ function renderScarfControls(){const sw=$("scSw");sw.innerHTML="";SC_PAL.forEach
     b.style.fontFamily="var(--display)";b.style.fontWeight="700";b.style.letterSpacing=".06em";
     if(st==="college")b.style.textShadow="2px 2px 0 var(--muted)";if(st==="retro")b.style.fontStyle="italic";
     b.setAttribute("aria-pressed",String(st===scStyle));b.onclick=()=>{scStyle=st;renderScarfControls();drawScarf()};fp.appendChild(b)});
-  $("scTop").placeholder=T("scarfTopDefault")}
+  $("scTop").placeholder=T("scarfTopDefault");$("scSearch").placeholder=T("scarfSearchPh");$("scHold").hidden=!(SC_TOUCH||SC_INAPP)}
 const scRGB=hex=>{const n=parseInt(hex.slice(1),16);return [n>>16,n>>8&255,n&255]};
 const scShade=(hex,a)=>{let [r,g,b]=scRGB(hex);const t=a<0?0:255,f=Math.abs(a);r=Math.round(r+(t-r)*f);g=Math.round(g+(t-g)*f);b=Math.round(b+(t-b)*f);return "#"+[r,g,b].map(v=>v.toString(16).padStart(2,"0")).join("")};
 const scLum=hex=>{const [r,g,b]=scRGB(hex);return (0.299*r+0.587*g+0.114*b)/255};
@@ -858,15 +867,19 @@ function drawScarf(){const cv2=$("scCv");if(!cv2||$("view-sjaal").hidden)return;
   y+=30+80;const l2=o.pos===1?T("scarfWin2"):T("scarfPos2");fit(l2,'800 {s}px '+FAM,76,940);g.fillStyle=ink;g.fillText(l2,W/2,y);
   y+=20+50;const l3=o.race+(o.gap?" · +"+o.gap:"");fit(l3,'500 {s}px '+FAM,36,940);g.fillStyle="#5B675F";g.fillText(l3,W/2,y);
   g.fillStyle="#B3BCB5";g.font='600 17px '+FAM;try{g.letterSpacing="6px"}catch(e){}
-  g.fillText("STUDIO BELLO",W/2+3,1855);try{g.letterSpacing="0px"}catch(e){}}
+  g.fillText("STUDIO BELLO",W/2+3,1855);try{g.letterSpacing="0px"}catch(e){}
+  const im=$("scImg");im.src=cv2.toDataURL("image/jpeg",0.9);im.alt=T("scarfTitle")+": "+o.name}
 function scBlob(cb){$("scCv").toBlob(cb,"image/png")}
 const scSlug=()=>{const o=scarfOptions()[Number($("scRider").value)||0];return "sjaal-"+scClean(o?o.name:"renner").toLowerCase().replace(/[^a-z0-9]+/g,"-")+".png"};
 $("scRider").onchange=()=>{const o=scarfOptions()[Number($("scRider").value)||0];$("scRider").dataset.key=o?o.key:"";drawScarf()};
 $("scTop").oninput=()=>drawScarf();
+$("scSearch").oninput=()=>{fillScarfRiders();const o=scarfOptions()[Number($("scRider").value)];if(o){$("scRider").dataset.key=o.key;drawScarf()}};
+$("scImg").addEventListener("contextmenu",()=>track("sjaal-lang-ingedrukt"));
+$("scarfCta").addEventListener("click",()=>track("cta-sjaal"));
 const scColorIn=()=>{scCustom=[$("scC1").value,$("scC2").value];renderScarfControls();drawScarf()};$("scC1").oninput=scColorIn;$("scC2").oninput=scColorIn;
-$("scSave").onclick=()=>scBlob(b=>{if(!b)return;const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=scSlug();document.body.appendChild(a);a.click();
-  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);$("scStatus").textContent=T("scarfSaved");track("sjaal-bewaard")});
-try{if(navigator.canShare&&navigator.canShare({files:[new File([""],"x.png",{type:"image/png"})]}))$("scShare").hidden=false}catch(e){}
+$("scSave").onclick=()=>{if(SC_INAPP){$("scStatus").textContent=T("scarfInapp");$("scHold").hidden=false;$("scImg").scrollIntoView({behavior:"smooth",block:"center"});track("sjaal-bewaar-inapp");return}scBlob(b=>{if(!b)return;const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=scSlug();document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);$("scStatus").textContent=T("scarfSaved");track("sjaal-bewaard")})};
+try{if(!SC_INAPP&&navigator.canShare&&navigator.canShare({files:[new File([""],"x.png",{type:"image/png"})]}))$("scShare").hidden=false}catch(e){}
 $("scShare").onclick=()=>scBlob(b=>{if(!b)return;const f=new File([b],scSlug(),{type:"image/png"});navigator.share({files:[f]}).then(()=>track("sjaal-gedeeld")).catch(()=>{})});
 $("scarfFor").onclick=()=>{if(follow===null)return;fillScarfRiders(race.riders[follow].name+"|"+race.title);location.hash="#sjaal"};
 
