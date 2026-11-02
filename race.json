@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-01",
+ "updated": "2026-11-02",
  "races": [
   {
    "id": "women-2026",
@@ -162,6 +162,10 @@
      "url": "https://cyclocross24.com/nl/race/18452/"
     },
     {
+     "label": "Volledige uitslag (Cyclingnews)",
+     "url": "https://www.cyclingnews.com/pro-cycling/racing/x2o-trofee-oudenaarde-thibau-nys-wins-koppenbergcross-after-heated-battle-with-michael-vanthourenhout/"
+    },
+    {
      "label": "Verslag (CyclingUpToDate)",
      "url": "https://cyclinguptodate.com/cyclocross/results-koppenbergcross-2026-thibau-nys-crashes-twice-but-wins-dramatic-season-debut-as-lucinda-brand-dominates"
     },
@@ -176,6 +180,10 @@
     {
      "label": "Verslag (Escape Collective)",
      "url": "https://escapecollective.com/harder-than-hard-brand-and-nys-take-team-sweep-at-koppenbergcross/"
+    },
+    {
+     "label": "Verslag met tussenstanden (Tour Magazin)",
+     "url": "https://www.tour-magazin.de/en/professional-cycling/latest-news/koppenbergcross-nys-overcomes-two-crashes-to-get-off-to-a-winning-start-in-the-x2o-trophy/"
     }
    ],
    "result": [
@@ -258,16 +266,58 @@
    ],
    "anchors": [
     {
+     "afterLap": 1,
+     "name": "Joris Nieuwenhuis",
+     "gap": 0,
+     "note": "Tour Magazin: na ronde 1 Nieuwenhuis op het wiel van Nys"
+    },
+    {
+     "afterLap": 1,
+     "name": "Michael Vanthourenhout",
+     "gap": 0,
+     "note": "Tour Magazin: na ronde 1 (8'41\") komt Nys als eerste door, Vanthourenhout op zijn wiel"
+    },
+    {
+     "afterLap": 3,
+     "name": "Gerben Kuypers",
+     "gap": -18,
+     "note": "Tour Magazin: na ronde 3 Vanthourenhout 7 s voor Kuypers, Nys op 25 s (t.o.v. winnaar Nys: -25 + 7)"
+    },
+    {
      "afterLap": 3,
      "name": "Michael Vanthourenhout",
      "gap": -25,
      "note": "Sporza 15:25: Nys komt door op 25 s van leider Vanthourenhout (gap t.o.v. winnaar Nys)"
     },
     {
+     "afterLap": 3,
+     "name": "Pim Ronhaar",
+     "gap": -14,
+     "note": "Tour Magazin: na ronde 3 Ronhaar op 11 s van Vanthourenhout, Nys op 25 s"
+    },
+    {
+     "afterLap": 3,
+     "name": "Thomas Mein",
+     "gap": -4,
+     "note": "Tour Magazin: na ronde 3 Mein op 21 s van Vanthourenhout, Nys op 25 s"
+    },
+    {
      "afterLap": 4,
      "name": "Michael Vanthourenhout",
      "gap": -17,
      "note": "Sporza 15:33: Nys op 17 s aan de finish, nog vier ronden"
+    },
+    {
+     "afterLap": 4,
+     "name": "Pim Ronhaar",
+     "gap": 11,
+     "note": "Tour Magazin: halfweg Nys op 18 s, Ronhaar op 29 s van Vanthourenhout"
+    },
+    {
+     "afterLap": 5,
+     "name": "Gerben Kuypers",
+     "gap": 0,
+     "note": "EsCiclismo: na ronde 5 Nys en Kuypers samen op 9 s van Vanthourenhout"
     },
     {
      "afterLap": 5,
@@ -277,27 +327,27 @@
     },
     {
      "afterLap": 6,
+     "name": "Gerben Kuypers",
+     "gap": 13,
+     "note": "Tour Magazin: einde ronde 6 Vanthourenhout 12 s voor Nys en 25 s voor Kuypers"
+    },
+    {
+     "afterLap": 6,
      "name": "Michael Vanthourenhout",
      "gap": -12,
      "note": "Sporza 15:48: Nys komt door op 12 s"
-    },
-    {
-     "afterLap": 5,
-     "name": "Gerben Kuypers",
-     "gap": 0,
-     "note": "EsCiclismo: na ronde 5 Nys en Kuypers samen op 9 s van Vanthourenhout"
-    },
-    {
-     "afterLap": 7,
-     "name": "Michael Vanthourenhout",
-     "gap": 0,
-     "note": "Nys haalt Vanthourenhout bij op de voorlaatste beklimming van de Koppenberg (Escape Collective, CyclingUpToDate, In de Leiderstrui)"
     },
     {
      "afterLap": 7,
      "name": "Gerben Kuypers",
      "gap": 25,
      "note": "Sporza 15:56: Kuypers komt door op 25 s"
+    },
+    {
+     "afterLap": 7,
+     "name": "Michael Vanthourenhout",
+     "gap": 0,
+     "note": "Nys haalt Vanthourenhout bij op de voorlaatste beklimming van de Koppenberg (Escape Collective, CyclingUpToDate, In de Leiderstrui)"
     }
    ]
   }
